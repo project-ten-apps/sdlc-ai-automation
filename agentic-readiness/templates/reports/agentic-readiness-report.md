@@ -1,6 +1,6 @@
 # Agentic readiness report - {{PROJECT_NAME}}
 
-Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}}
+Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}  <!-- full / audit -->
 
 ## Questionnaire answers
 
@@ -30,6 +30,7 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}}
 | Lint / format | | | |
 | Secrets | | | |
 | Code map / docs | | | |
+| Instruction size (context hygiene) | | | |
 | Branch hygiene | | | |
 | Verification device | | | |
 
@@ -61,5 +62,7 @@ Task: | Result: | What slowed the agent down: | Changes made to AGENTS.md / skil
 ## Readiness after
 
 Same table as the audit, with the new status.
+
+## Recommended next steps
 
 ## Open items / needs the client

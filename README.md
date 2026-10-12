@@ -10,6 +10,7 @@ It uses the open [Agent Skills](https://agentskills.io) format (`SKILL.md` with 
 agentic-readiness/
   SKILL.md                 short workflow (steps 0-7)
   questionnaire.md         the one up-front question round, with defaults
+  scripts/                 validate-report.ps1 / .sh: checks the readiness report
   stacks/                  android.md, flutter.md, generic.md
   templates/
     AGENTS.md              primary project instruction file
@@ -66,7 +67,7 @@ Notes:
 
 ## Using it
 
-In the target repository, ask your agent: "Prepare this repo for agentic development". It asks the questionnaire once, then runs the audit, writes AGENTS.md and pointers, installs tools, runs the security audit, generates project skills and subagents, writes the migration plan, and stops to pick a pilot task.
+In the target repository, ask your agent: "Prepare this repo for agentic development". For a read-only assessment (nothing created or installed in the repo, report written outside it), ask: "Audit this repo for agentic readiness, audit only". For the full setup it asks the questionnaire once, then runs the audit, writes AGENTS.md and pointers, installs tools, runs the security audit, generates project skills and subagents, writes the migration plan, and stops to pick a pilot task.
 
 ## Updating
 

@@ -3,7 +3,7 @@ name: agentic-readiness
 description: Use when preparing an existing codebase (Android/Kotlin, Flutter/Dart or any other stack) for agentic AI development - questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan, pilot task. Works with any coding agent that reads Agent Skills or AGENTS.md.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Agentic readiness
@@ -21,6 +21,11 @@ Paths below are relative to this skill's folder. Read a supporting file only whe
 - "MCP" = use an MCP server if your agent supports MCP; otherwise use the CLI or official docs listed as the fallback.
 - Never assume a vendor-specific tool exists. Check, then fall back.
 
+## Modes
+
+- **Full** (default): steps 0-7.
+- **Audit only** (read-only): use when the developer asks to "assess", "audit", "check readiness", or when the client has not approved agentic work yet. Run step 0 (questions 1, 4, 11 only), step 1 and the read-only checks of step 4. Do not create, edit or install anything in the repository or the user's tool config; write only the report, outside the repository (e.g. `../<repo>-agentic/agentic-readiness-report.md`). Skip sections 2, 3, 5, 6, 7 of the report except a short "Recommended next steps" list.
+
 ## 0. Questionnaire - the only stop before work
 
 Ask the questions in `questionnaire.md` once, offering the defaults. Record the answers in `agentic-readiness-report.md` (template: `templates/reports/agentic-readiness-report.md`). Then proceed without further stops until step 7, except where a step says STOP.
@@ -29,7 +34,8 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
 
 1. Detect the stack and versions from build files. Load the matching guide: `stacks/android.md`, `stacks/flutter.md`, or `stacks/generic.md` for anything else.
 2. Check: existing AGENTS.md / CLAUDE.md / GEMINI.md / `.cursor/rules` / `.github/copilot-instructions.md`; tests (count, kinds, do they pass); CI; linters/formatters; build reproducibility (wrapper scripts and lockfiles committed?); secrets in the tree and in git history; branch divergence (main vs active feature branches, unmerged work).
-3. Fill in the audit section of the report: red/amber/green per area plus the gap list.
+3. Instruction size (context hygiene): count lines of every existing instruction file and skill. Green: AGENTS.md/CLAUDE.md up to 200 lines, each skill up to ~15 steps and 500 lines. Amber: instruction file 200-500 lines or skills mixing several workflows. Red: over 500 lines, or one file describing the whole organisation. Apply the same limits to everything you generate later.
+4. Fill in the audit section of the report: red/amber/green per area plus the gap list.
 
 ## 2. Project instructions and code map
 
@@ -70,6 +76,15 @@ Estimate each stage in agent hours plus human review hours, and state that estim
 ## 7. Pilot
 
 STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down, then update AGENTS.md and the skills. Final report: readiness before/after, what is left, what needs the client.
+
+## Validate the report
+
+Before handing over any report (audit-only or full), run the validator and fix every error it lists:
+
+- Windows: `pwsh <skill-dir>/scripts/validate-report.ps1 -Path <report> [-Mode Audit] [-ProjectRoot <repo>]`
+- macOS/Linux: `sh <skill-dir>/scripts/validate-report.sh <report> [audit|full] [<repo>]`
+
+It checks that required sections exist and are filled, no `{{PLACEHOLDER}}` is left, every audit row has a red/amber/green status, and (with the project root) that AGENTS.md/CLAUDE.md stay within the size limits.
 
 ## Rules
 
