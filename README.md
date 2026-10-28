@@ -29,7 +29,7 @@ Project skill templates are named `SKILL.template.md` so agents do not load them
 ## Install (Windows, PowerShell 5.1 or 7)
 
 ```powershell
-git clone <this repo> "$HOME\agent-skills"   # or keep it where it is
+git clone https://github.com/project-ten-apps/sdlc-ai-automation.git "$HOME\agent-skills"   # or keep it where it is
 cd "$HOME\agent-skills"
 ./install.ps1                                # junctions into ~/.claude/skills and ~/.agents/skills
 ```
