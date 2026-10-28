@@ -72,3 +72,7 @@ In the target repository, ask your agent: "Prepare this repo for agentic develop
 ## Updating
 
 Edit files here and commit. With `-Mode Link`, every tool sees the change immediately (restart running sessions). With `-Mode Copy`, re-run `./install.ps1 -Mode Copy -Force`.
+
+## License
+
+[MIT](LICENSE) © 2026 Andrei Savinski
