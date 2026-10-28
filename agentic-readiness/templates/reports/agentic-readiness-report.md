@@ -29,6 +29,9 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | CI | | | |
 | Lint / format | | | |
 | Secrets | | | |
+| Secret read protection (per agent) | | | |
+| Agent can build and test (where) | | | |
+| Git identity and line endings | | | |
 | Code map / docs | | | |
 | Instruction size (context hygiene) | | | |
 | Branch hygiene | | | |

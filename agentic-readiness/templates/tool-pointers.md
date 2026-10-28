@@ -37,6 +37,27 @@ The templates in `templates/agents/` use Markdown with YAML frontmatter (`name`,
 
 Read-only roles (code-reviewer, security-reviewer): restrict tools to read/search plus shell for read-only commands where the tool supports a tools list; otherwise state "read-only, never edit files" in the body (already in the templates).
 
+## Secret read protection
+
+Goal: agents never read credential files, even ignored ones. `.gitignore` does not stop an agent from reading a file. Use the same pattern list everywhere, trimmed to what exists in the repo:
+
+```
+.env  .env.*  (allow .env.example)  *.jks  *.keystore  *.p12  *.pem  *.key
+key.properties  keystore.properties  local.properties  secrets.*  service-account*.json
+```
+
+| Tool | Mechanism | Example |
+|---|---|---|
+| Claude Code | `permissions.deny` in `.claude/settings.json` (shared) or `.claude/settings.local.json` (local) | `"deny": ["Read(./.env)", "Read(./.env.*)", "Read(**/*.jks)", "Read(**/key.properties)"]` |
+| Codex CLI | Filesystem permission profile in `~/.codex/config.toml` (or project `.codex/config.toml`), access `deny` | `[permissions.<profile>.filesystem.":project_roots"]` `"**/*.env" = "deny"`; set `glob_scan_max_depth` for `**` on Linux/Windows |
+| Gemini CLI | `.geminiignore` (gitignore syntax) | one pattern per line |
+| Cursor | `.cursorignore` (gitignore syntax) | one pattern per line |
+| GitHub Copilot | Content exclusion in repo/org settings (Business/Enterprise only), not a file | ask the repo admin; record as client-side if unavailable |
+| Windsurf / Devin | `.codeiumignore` (gitignore syntax) | one pattern per line |
+| OpenCode | `permission.read` map in `opencode.json` (`.env` denied by default) | `{"permission": {"read": {"*": "allow", "*.jks": "deny", "*.env.*": "deny", "*.env.example": "allow"}}}` |
+
+Limits to state in the report: ignore files and read-deny rules usually do not cover shell commands (`cat .env`), so also deny or ask for shell reads of those paths where the tool allows it, and prefer keeping real secrets outside the repository (env vars, OS keychain, CI secrets). Verify each rule by asking the agent to read one denied file; it must refuse or fail. Mechanisms checked on 2026-10-28; re-check vendor docs if behaviour differs.
+
 ## Local-only mode
 
 If agentic files must stay local, add every generated path to `.git/info/exclude`, for example:
