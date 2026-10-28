@@ -40,7 +40,7 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
 ## 2. Project instructions and code map
 
 1. Build the code map with **graphify** (skill or CLI, output in `graphify-out/`, gitignored). If graphify is unavailable, say so in the report and produce a module map from the build files and directory tree instead; never invent structure.
-2. Write `AGENTS.md` from `templates/AGENTS.md`: stack, module map, key flows, exact build/test/lint commands (verified by running them), conventions, hard rules from the questionnaire, tools section.
+2. Write `AGENTS.md` from `templates/AGENTS.md`: stack, module map, key flows, exact build/test/lint commands (verified by running them), known-red checks (commands that already fail on the base branch, with the failure), typical feature file layout taken from one real feature, preferred UI stack, what needs approval, conventions, hard rules from the questionnaire, tools section. No changelogs or task history in it.
 3. Add thin per-tool pointers so every agent reads the same AGENTS.md (see `templates/tool-pointers.md`): `CLAUDE.md` importing it (`templates/CLAUDE.md`), and only for the tools the team uses, `GEMINI.md`/settings, Copilot and Cursor pointers.
 
 ## 3. Tools

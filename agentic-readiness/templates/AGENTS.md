@@ -11,6 +11,11 @@ Instructions for AI coding agents working in this repository. Tool-specific file
 - Never print, copy or log full secret values. Never add new secrets to the repo.
 - Evidence before claims: "done", "passes", "fixed" must be backed by the command you ran and its result.
 - Keep diffs minimal and in scope; no drive-by refactoring.
+- No feature changelogs or task history in this file; it describes how the project works now. History lives in git, specs and PRs.
+
+## Needs approval
+
+Ask the developer before: {{NEEDS_APPROVAL}}  <!-- e.g. new dependency, stack/UI framework change, DB schema or API contract change, build/CI config, deleting files, anything touching signing or secrets -->
 
 ## Project overview
 
@@ -19,6 +24,7 @@ Instructions for AI coding agents working in this repository. Tool-specific file
 - Stack: {{LANGUAGES_AND_VERSIONS}}
 - Platforms: {{PLATFORMS}}
 - Architecture: {{ARCHITECTURE_SUMMARY}}
+- Preferred UI stack for new code: {{UI_STACK}}  <!-- e.g. "Jetpack Compose; XML views only when editing legacy screens" -->
 
 ## Module map
 
@@ -29,6 +35,12 @@ Instructions for AI coding agents working in this repository. Tool-specific file
 | {{MODULE}} | {{RESPONSIBILITY}} |
 
 Key flows: {{KEY_FLOWS}} (see `graphify-out/GRAPH_REPORT.md` for details).
+
+Typical feature layout (copy this shape for new features; example: {{EXAMPLE_FEATURE}}):
+
+```
+{{FEATURE_FILE_PATHS}}
+```
 
 ## Commands
 
@@ -42,6 +54,14 @@ All verified on {{DATE}}.
 | Integration / instrumented tests | {{CMD_INTEGRATION_TEST}} |
 | Lint / analyze | {{CMD_LINT}} |
 | Format | {{CMD_FORMAT}} |
+
+Known-red checks (already failing on `{{BASE_BRANCH}}`; do not try to fix them unless asked, and do not count them as your regressions):
+
+| Check | Failure | Since / ticket |
+|---|---|---|
+| {{KNOWN_RED_CHECK}} | {{KNOWN_RED_FAILURE}} | {{KNOWN_RED_REF}} |
+
+If there are none, write "None as of {{DATE}}."
 
 ## Conventions
 
