@@ -19,6 +19,23 @@ Agents follow written rules unevenly; rules that fail the build are followed eve
 
 A green check that inspects nothing is worse than no check. For every tool in the gate, confirm from its task list, report or file count that it covers the main sources (not only build scripts or tests). In full mode, make one deliberate violation in a main source file on a scratch branch, run the gate, see it fail, and discard the change.
 
+## Enforcement
+
+Questionnaire answer 13 decides where the gate is enforced.
+
+- **CI can block merges:** run the gate command as a required check on every PR. The hook below is still useful for faster feedback but optional.
+- **No such CI:** a git `pre-push` hook is the gate. It fires on every push, whichever agent or human runs it. Template: `templates/githooks/pre-push` (replace `{{CMD_GATE}}`, keep LF line endings and the executable bit: `git update-index --chmod=+x .githooks/pre-push`).
+  - Commit allowed (answer 1): commit it as `.githooks/pre-push`; each developer runs `git config core.hooksPath .githooks` once (or a build task such as `installGitHooks` does it). Add that line to AGENTS.md "Commands".
+  - Local only: copy it to `.git/hooks/pre-push`. If the gate task itself cannot be committed yet, the hook runs the existing commands in sequence instead.
+- **Agents must not skip it.** Deny `--no-verify` pushes for every agent that supports command rules. Claude Code, in the same settings file as the secret rules (`templates/tool-pointers.md`):
+
+  ```json
+  "deny": ["Bash(git push *--no-verify*)", "PowerShell(git push *--no-verify*)"]
+  ```
+
+  Command rules are best-effort (an agent can still change `core.hooksPath`), so also state the rule in AGENTS.md "Hard rules": never bypass hooks; a red gate goes to the developer. Verify by asking the agent to push with `--no-verify`; it must be refused.
+- **Optional agent hook (Claude Code `PreToolUse`)** only if the team wants the gate output in the agent's context before git runs: matcher `Bash|PowerShell`, `"if": "Bash(git push *)"` (a second handler for `PowerShell(git push *)`), exit code 2 blocks the call. Run the gate in `cwd` from the hook's stdin JSON, not in `$CLAUDE_PROJECT_DIR`, which stays at the main checkout when the push comes from a worktree. On Windows set `"shell": "powershell"`: Gradle started from Git Bash in a sandboxed agent shell can fail with "Unable to establish loopback connection". With both hooks the gate runs twice per push; skip the git hook when a stamp file (gate passed for the current HEAD on a clean tree) matches.
+
 ## Rollout
 
 Treat adding the gate as a build-config change: it needs approval (AGENTS.md "Needs approval") and follows the commit decision from questionnaire answer 1. Record per check: tool, scope, baseline size at introduction, runtime.
