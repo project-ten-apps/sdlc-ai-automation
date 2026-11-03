@@ -16,9 +16,11 @@ Ask all questions in one go. Show the default for each; the developer may answer
 | 10 | Device/emulator available for verification? (Android AVD, iOS simulator, browser) | Detect; ask only if none found |
 | 11 | Anything the client already raised? (secrets, licensing, data residency, AI usage policy) | None |
 | 12 | Which tools may the agent install, and where? (global npm/pip, MCP servers) | User scope; nothing written into the repo if answer 1 is "local" |
+| 13 | Is there a CI server that can run required checks on every PR? (GitHub Actions, GitLab CI, Jenkins, Bamboo, Bitbucket Pipelines, none) | Detect from CI config files; ask only if none found |
 
 ## Consequences to apply
 
 - Answer 1 = local: every generated file goes into `.git/info/exclude`; never `git add` them; settings use user/local scope; worktrees get a copy of the local files (also excluded).
 - Answer 1 = commit: put skills in `.agents/skills/` and the tool-specific folders listed in `templates/tool-pointers.md`; commit on a dedicated branch `chore/agentic-setup` and let the developer open the PR.
 - Answer 4 decides which pointer files and subagent formats to generate. Do not generate files for tools nobody uses.
+- Answer 13 decides where the quality gate is enforced: a required CI job if CI can block merges, otherwise a local gate plus a git `pre-push` hook.
