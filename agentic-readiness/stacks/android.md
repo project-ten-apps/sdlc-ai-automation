@@ -41,6 +41,21 @@ Pitfalls:
 - **Compose rules flag legitimate theme locals.** Allow them in `.editorconfig` (`compose_allowed_composition_locals = LocalAppColors`) instead of suppressing the rule.
 - **New modules without `.gitignore` (`/build`)** get their build output committed. Check `git status` before the first commit.
 
+Architecture rules with Konsist (test-only JVM module, e.g. `:konsist`, with a baseline folder). Starter list for MVVM + Clean Architecture + Hilt; keep what matches the project:
+
+- Runtime safety: `@SerializedName` (or the serializer's equivalent) on every field of network models when R8 has no keep rules; every Activity declared in the manifest; `by viewModels()` only in `@AndroidEntryPoint` classes.
+- ViewModels: no `Context`/`Resources`/`Activity`/`Application`, no `AndroidViewModel`; constructor takes only domain interfaces and use cases; no public `var` or `Mutable*Flow`; every ViewModel has a test.
+- Layers: `:domain` imports no `android.*`, Retrofit, OkHttp or Gson; screens and adapters do not import domain models; every `RepositoryImpl` has a test.
+- Screens and Compose: no public constants or helpers in Activity/Fragment files; screens do not read preferences directly; `*ViewState` is an immutable data class; composables `internal`/`private`, previews `private`.
+
+Konsist pitfalls:
+
+- A separate module reads other modules from disk, so Gradle considers the test up to date after a change elsewhere. Declare the other modules' `src/**/*.kt` and manifests as test inputs.
+- Use `Konsist.scopeFromDirectory("<module>/src/main/java")`, not `scopeFromProject()`, which also scans worktree copies.
+- Match text, not only imports, for members inherited from base classes (a field from `BaseActivity` is used without an import).
+
+Sources: [Android architecture recommendations](https://developer.android.com/topic/architecture/recommendations), [Konsist Android snippets](https://docs.konsist.lemonappdev.com/inspiration/snippets/android-snippets), [Konsist Clean Architecture snippets](https://docs.konsist.lemonappdev.com/inspiration/snippets/clean-architecture-snippets).
+
 ## Emulator verification
 
 1. `adb devices`; if empty: `emulator -list-avds`, `emulator -avd <name> -no-snapshot-save`, `adb wait-for-device`, poll `adb shell getprop sys.boot_completed` until `1`. No AVD -> STOP, ask the developer to create one.

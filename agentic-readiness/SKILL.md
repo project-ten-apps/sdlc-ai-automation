@@ -54,7 +54,7 @@ Install and verify the tools from the stack guide at the scope the questionnaire
 
 - All stacks: Context7 (MCP, or `npx ctx7` / official docs as fallback) for current library and API docs; the spec-driven framework chosen in the questionnaire (default OpenSpec: `npm i -g @fission-ai/openspec`, `openspec init`).
 - Stack-specific tools: see the stack guide.
-- Quality gate: one command that runs lint, tests and architecture rules with baselines, enforced before push or merge. Follow `quality-gate.md` and the stack guide's recipe; if build-config changes are not approved yet, propose it as stage 0 instead.
+- Quality gate: one command that runs lint, tests and architecture rules with baselines, enforced before push or merge. Follow `quality-gate.md` and the stack guide's recipe; turn the project's written conventions into architecture-rule tests there. If build-config changes are not approved yet, propose it as stage 0 instead.
 
 Verify each tool with one real call (list servers, run a sample query) and record the result.
 

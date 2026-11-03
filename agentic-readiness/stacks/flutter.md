@@ -24,7 +24,7 @@
 - **Context7**: Flutter, Dart and package docs (pub.dev).
 - **FVM** if `.fvmrc` exists or the team needs a pinned SDK.
 - Lints: `flutter_lints` or `very_good_analysis`; baseline existing issues (temporary `analyzer: errors:` / `exclude:` entries with a TODO, or a list of ignored rules) so new code is held to the full rule set.
-- Quality gate (see `../quality-gate.md`): one script (e.g. `tool/quality_gate.sh`, or a `melos` script in a monorepo) running the format check, `flutter analyze --fatal-infos` and `flutter test`. `flutter analyze` has no baseline file, so the temporary excludes above are the baseline: they may only shrink.
+- Quality gate (see `../quality-gate.md`): one script (e.g. `tool/quality_gate.sh`, or a `melos` script in a monorepo) running the format check, `flutter analyze --fatal-infos` and `flutter test`. `flutter analyze` has no baseline file, so the temporary excludes above are the baseline: they may only shrink. Architecture rules: plain Dart tests in `test/architecture/` that read `lib/` imports (e.g. features do not import each other's internals, the domain layer imports no Flutter or `dio`), or an analyzer plugin (`analysis_server_plugin`, Dart 3.10+; check current docs before choosing).
 - Dependency audit: `flutter pub outdated`; check advisories on pub.dev / OSV (`osv-scanner --lockfile=pubspec.lock` if installed).
 
 ## Device verification

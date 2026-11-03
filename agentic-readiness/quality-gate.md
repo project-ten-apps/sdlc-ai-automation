@@ -19,6 +19,15 @@ Agents follow written rules unevenly; rules that fail the build are followed eve
 
 A green check that inspects nothing is worse than no check. For every tool in the gate, confirm from its task list, report or file count that it covers the main sources (not only build scripts or tests). In full mode, make one deliberate violation in a main source file on a scratch branch, run the gate, see it fail, and discard the change.
 
+## Architecture rules
+
+Review comments on agent-written code are mostly rules the team already has in its head or in `docs/`. Turn them into tests that run in the gate (Konsist for Kotlin, ArchUnit for JVM, the stack guide's option otherwise):
+
+1. Collect candidate rules from AGENTS.md conventions, the team's guidelines and recent review comments. Prefer rules that catch code which compiles but crashes in release (serialization without keep rules, components missing from the manifest, DI annotations missing), then layer boundaries, then style.
+2. Write each rule, run it, and read every hit. A first draft usually over-matches; narrow it until the hits are real violations.
+3. Baseline the remaining violations with a helper that fails on new violations and on stale baseline entries.
+4. Scan source directories explicitly; whole-project scopes also pick up copies in worktree folders (`.claude/worktrees/`, `.worktrees/`) and build output.
+
 ## Enforcement
 
 Questionnaire answer 13 decides where the gate is enforced.
