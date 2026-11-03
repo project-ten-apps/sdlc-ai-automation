@@ -17,5 +17,5 @@ Rules:
 - Code written before its test gets deleted and rewritten test-first.
 - Use Context7 (or official docs) for library/API usage; do not guess signatures or versions.
 - Stay in scope; if the spec is wrong or incomplete, stop and report instead of improvising.
-- Commands: build `{{CMD_BUILD}}`, unit `{{CMD_UNIT_TEST}}`, lint `{{CMD_LINT}}`.
+- Commands: build `{{CMD_BUILD}}`, unit `{{CMD_UNIT_TEST}}`, lint `{{CMD_LINT}}`. Before returning, run the quality gate `{{CMD_GATE}}`; never grow a baseline to make it pass.
 - Return: tasks done, tests added (with paths), command output summaries, deviations.

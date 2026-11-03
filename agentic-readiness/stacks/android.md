@@ -22,7 +22,39 @@ If `gradlew` scripts are missing or gitignored, flag it as a red item (build not
 - **maven-mcp** (MCP, github.com/kirich1409/maven-mcp): latest versions, CVEs, AGP/Gradle/Kotlin compatibility, dependency conflicts. Fallback: Maven Central search + Gradle `dependencyUpdates`.
 - **Context7**: AndroidX, Compose, Retrofit, etc. docs.
 - **Android SDK**: `ANDROID_HOME` / `ANDROID_SDK_ROOT`, else `%LOCALAPPDATA%\Android\Sdk` (Windows) or `~/Library/Android/sdk` (macOS). Need `platform-tools/adb`, `emulator/emulator`.
-- Linters: add detekt/ktlint with a **baseline** so existing issues do not block work.
+- Linters: add detekt/ktlint with a **baseline** so existing issues do not block work; wire them into the quality gate below.
+
+## Quality gate (see `../quality-gate.md`)
+
+Recipe:
+
+- A convention plugin in `build-logic/` applies ktlint-gradle (plus `io.nlopez.compose.rules:ktlint` if Compose is used) and Android Lint with the checks the team cares about as errors (e.g. `HardcodedText`, `MissingTranslation`), each with a baseline per module.
+- A root task `qualityGate` depends on `ktlintCheck`, `lint` (debug variant), `testDebugUnitTest`, the architecture-rule tests and `:app:minifyReleaseWithR8` (R8 coverage without signing; `assembleRelease` needs the keystore).
+- `.gitattributes` with `* text=auto eol=lf` (see step 1).
+
+Pitfalls:
+
+- **ktlint-gradle before 14 on AGP 9 built-in Kotlin** registers only the `.kts` tasks, so `ktlintCheck` is green without linting a single `.kt` file. Check that `ktlintMainSourceSetCheck` exists (`./gradlew :<module>:tasks --all`).
+- **ktlint-gradle incremental runs** keep reporting errors of deleted files. Force a full run inside the gate, e.g. a changing input property on `KtLintCheckTask` when `qualityGate` is in the task graph.
+- **Lint baselines with absolute paths:** `NewerVersionAvailable`, `GradleDependency` and `AndroidGradlePluginVersion` report `libs.versions.toml` by absolute path, so the baseline never matches on another machine. Disable them in the gate; they also change with every library release.
+- **Lint creates a missing baseline file and fails.** Keep an empty file, or set `baseline` only when the file exists.
+- **Compose rules flag legitimate theme locals.** Allow them in `.editorconfig` (`compose_allowed_composition_locals = LocalAppColors`) instead of suppressing the rule.
+- **New modules without `.gitignore` (`/build`)** get their build output committed. Check `git status` before the first commit.
+
+Architecture rules with Konsist (test-only JVM module, e.g. `:konsist`, with a baseline folder). Starter list for MVVM + Clean Architecture + Hilt; keep what matches the project:
+
+- Runtime safety: `@SerializedName` (or the serializer's equivalent) on every field of network models when R8 has no keep rules; every Activity declared in the manifest; `by viewModels()` only in `@AndroidEntryPoint` classes.
+- ViewModels: no `Context`/`Resources`/`Activity`/`Application`, no `AndroidViewModel`; constructor takes only domain interfaces and use cases; no public `var` or `Mutable*Flow`; every ViewModel has a test.
+- Layers: `:domain` imports no `android.*`, Retrofit, OkHttp or Gson; screens and adapters do not import domain models; every `RepositoryImpl` has a test.
+- Screens and Compose: no public constants or helpers in Activity/Fragment files; screens do not read preferences directly; `*ViewState` is an immutable data class; composables `internal`/`private`, previews `private`.
+
+Konsist pitfalls:
+
+- A separate module reads other modules from disk, so Gradle considers the test up to date after a change elsewhere. Declare the other modules' `src/**/*.kt` and manifests as test inputs.
+- Use `Konsist.scopeFromDirectory("<module>/src/main/java")`, not `scopeFromProject()`, which also scans worktree copies.
+- Match text, not only imports, for members inherited from base classes (a field from `BaseActivity` is used without an import).
+
+Sources: [Android architecture recommendations](https://developer.android.com/topic/architecture/recommendations), [Konsist Android snippets](https://docs.konsist.lemonappdev.com/inspiration/snippets/android-snippets), [Konsist Clean Architecture snippets](https://docs.konsist.lemonappdev.com/inspiration/snippets/clean-architecture-snippets).
 
 ## Emulator verification
 
@@ -38,4 +70,4 @@ If `gradlew` scripts are missing or gitignored, flag it as a red item (build not
 
 ## Migration notes
 
-Typical stage 0: commit wrapper, move secrets to `local.properties`/CI secrets, version catalog, detekt+ktlint baseline, JUnit/MockK/Turbine + Espresso/Compose test infra, CI running unit tests. Then: Java -> Kotlin for touched files, callbacks/Rx -> coroutines, DI, Views -> Compose screen by screen.
+Typical stage 0: commit wrapper, move secrets to `local.properties`/CI secrets, version catalog, `qualityGate` with baselines, JUnit/MockK/Turbine + Espresso/Compose test infra, CI running unit tests. Then: Java -> Kotlin for touched files, callbacks/Rx -> coroutines, DI, Views -> Compose screen by screen.
