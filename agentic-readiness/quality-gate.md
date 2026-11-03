@@ -47,4 +47,6 @@ Questionnaire answer 13 decides where the gate is enforced.
 
 ## Rollout
 
-Treat adding the gate as a build-config change: it needs approval (AGENTS.md "Needs approval") and follows the commit decision from questionnaire answer 1. Record per check: tool, scope, baseline size at introduction, runtime.
+Treat adding the gate as a build-config change: it needs approval (AGENTS.md "Needs approval") and follows the commit decision from questionnaire answer 1. Agree the scope with the developer before pushing. Record per check: tool, scope, baseline size at introduction, runtime.
+
+Before the gate is merged, run it on every open feature and fix branch (merge or rebase the gate branch onto each in a throwaway worktree) and report per branch: green, or which checks fail and what to fix first. That shows which branches break after the merge.

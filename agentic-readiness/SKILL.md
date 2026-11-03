@@ -3,7 +3,7 @@ name: agentic-readiness
 description: Use when preparing an existing codebase (Android/Kotlin, Flutter/Dart or any other stack) for agentic AI development - questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan, pilot task. Works with any coding agent that reads Agent Skills or AGENTS.md.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Agentic readiness
@@ -81,7 +81,7 @@ Estimate each stage in agent hours plus human review hours, and state that estim
 
 ## 7. Pilot
 
-STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down, then update AGENTS.md and the skills. Final report: readiness before/after, what is left, what needs the client.
+STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down and which review comments the gate should have caught (candidates for new rules), then update AGENTS.md, the skills and the gate. Final report: readiness before/after, what is left, what needs the client.
 
 ## Validate the report
 
