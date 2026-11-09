@@ -31,6 +31,9 @@ If `gradlew` scripts are missing or gitignored, flag it as a red item (build not
 3. Drive UI with `adb shell input tap|text|swipe`, find elements via `adb shell uiautomator dump` + `adb pull /sdcard/window_dump.xml`.
 4. Screenshot each step: `adb exec-out screencap -p > step-N.png`.
 5. After each scenario: scan logcat for `FATAL EXCEPTION`, `ANR`, errors from the package.
+6. Video (only when video evidence is on): start `adb shell screenrecord --bit-rate 4000000 /sdcard/scenario-N.mp4` in the background before the first step, stop it after the last (`adb shell pkill -INT screenrecord`, then wait a second), then `adb pull /sdcard/scenario-N.mp4` and `adb shell rm /sdcard/scenario-N.mp4`. Limits: 3 minutes per file and no audio, so split longer scenarios.
+
+Long-running: `./gradlew` builds and `connected*AndroidTest` go to the background (see AGENTS.md "Long-running commands"); done markers are `BUILD SUCCESSFUL` / `BUILD FAILED`. Emulator boot: poll `adb shell getprop sys.boot_completed`.
 
 ## Security hotspots
 

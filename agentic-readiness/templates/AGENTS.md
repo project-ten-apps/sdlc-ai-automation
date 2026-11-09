@@ -63,6 +63,15 @@ Known-red checks (already failing on `{{BASE_BRANCH}}`; do not try to fix them u
 
 If there are none, write "None as of {{DATE}}."
 
+## Long-running commands
+
+Builds, emulator/simulator boot and instrumented tests can outlast the agent's command timeout. Never wait for them with a fixed `sleep`.
+
+1. Start the command in the background with output to a log file: {{BACKGROUND_RUN}}  <!-- the agent's own background mode if it has one; else tmux (`tmux new -d -s build '<cmd> 2>&1 | tee build.log'`) on macOS/Linux, `Start-Process -NoNewWindow -RedirectStandardOutput build.log -RedirectStandardError build.err.log` on Windows -->
+2. Poll the end of the log every 15-30 s and report progress to the developer on long runs.
+3. Done means an explicit marker, not elapsed time: {{DONE_MARKERS}}  <!-- e.g. `BUILD SUCCESSFUL` / `BUILD FAILED`, `sys.boot_completed` = 1, test summary line, process exit -->
+4. On the first error line, stop waiting, read the full error and act on it.
+
 ## Conventions
 
 - Branches: {{BRANCH_NAMING}}; base branch: {{BASE_BRANCH}}. One worktree per work stream.

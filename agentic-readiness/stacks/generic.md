@@ -21,7 +21,8 @@ Run each command once; a command that is documented but fails is a red audit ite
 
 ## Verification target
 
-- Web: start the dev server and drive it with the agent's browser tool or Playwright; screenshots per step; check the console for errors.
+- Web: start the dev server and drive it with the agent's browser tool or Playwright; screenshots per step; check the console for errors. Video (only when video evidence is on): Playwright `recordVideo` on the browser context.
+- Dev servers, watchers and long builds run in the background with a log file (AGENTS.md "Long-running commands"); done marker is the "ready"/"listening" line, not a sleep.
 - Backend: run the service and hit it with the integration tests or `curl` scenarios from the spec.
 - CLI/library: run the test suite and a usage example from the README.
 
