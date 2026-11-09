@@ -33,7 +33,7 @@ Review comments on agent-written code are mostly rules the team already has in i
 Questionnaire answer 13 decides where the gate is enforced.
 
 - **CI can block merges:** run the gate command as a required check on every PR. The hook below is still useful for faster feedback but optional.
-- **No such CI:** a git `pre-push` hook is the gate. It fires on every push, whichever agent or human runs it. Template: `templates/githooks/pre-push` (replace `{{CMD_GATE}}`, keep LF line endings and the executable bit: `git update-index --chmod=+x .githooks/pre-push`).
+- **No such CI:** a git `pre-push` hook is the gate. It fires on every push, whichever agent or human runs it. Template: `templates/githooks/pre-push` (replace `{{CMD_GATE}}`, keep LF line endings and the executable bit: `git update-index --chmod=+x .githooks/pre-push`). The gate runs on the checkout, so the hook rejects pushes of anything other than the checked-out HEAD on a clean tree (`git push --all`, other branches, uncommitted changes); push each branch from its own worktree.
   - Commit allowed (answer 1): commit it as `.githooks/pre-push`; each developer runs `git config core.hooksPath .githooks` once (or a build task such as `installGitHooks` does it). Add that line to AGENTS.md "Commands".
   - Local only: copy it to `.git/hooks/pre-push`. If the gate task itself cannot be committed yet, the hook runs the existing commands in sequence instead.
 - **Agents must not skip it.** Deny `--no-verify` pushes for every agent that supports command rules. Claude Code, in the same settings file as the secret rules (`templates/tool-pointers.md`):
