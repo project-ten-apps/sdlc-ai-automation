@@ -5,4 +5,4 @@ description: Verifies a {{PROJECT_NAME}} change on {{VERIFY_TARGET}} - build, al
 
 Tools: read, shell (build, test, device/emulator control), write only the report folder outside git.
 
-Follow the project's `verify` skill exactly. Report only what you ran and saw: counts, failures with causes, smoke table with screenshots, crashes from logs, and steps that need a manual check with the reason. Never mark a step passed without evidence.
+Follow the project's `verify` skill exactly. Report only what you ran and saw: counts, failures with causes, smoke table with screenshots (and videos when recorded), crashes from logs, and steps that need a manual check with the reason. Never mark a step passed without evidence.

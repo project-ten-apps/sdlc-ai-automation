@@ -29,7 +29,7 @@ Long-running commands (build, emulator boot, instrumented tests) run in the back
 1. Scenarios: the WHEN/THEN scenarios of the current spec change, plus any smoke checklist in `docs/`.
 2. Install and launch the app on the target; clear logs first.
 3. Drive each scenario ({{UI_DRIVER}}). Screenshot after each step.
-   - Only if video evidence is on for this scenario (or the developer asked for it on this run): start the recording before the first step and stop it after the last ({{VIDEO_COMMANDS}}). If recording fails, note it in the report and carry on with screenshots; a missing video never blocks verification.
+   - Only if video evidence applies (every smoke scenario; bugfixes only = when `bugfix` called this run; or the developer asked for it on this run): start the recording before the first step and stop it after the last ({{VIDEO_COMMANDS}}), saving the file into the report folder. If recording fails, note it in the report and carry on with screenshots; a missing video never blocks verification.
 4. After each scenario, scan logs for crashes, ANRs/hangs and errors from the app.
 5. Steps that cannot be automated (camera, real payment, external login code) are marked "manual check needed" with the reason, never silently skipped.
 

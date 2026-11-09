@@ -22,5 +22,5 @@ Ask all questions in one go. Show the default for each; the developer may answer
 
 - Answer 1 = local: every generated file goes into `.git/info/exclude`; never `git add` them; settings use user/local scope; worktrees get a copy of the local files (also excluded).
 - Answer 1 = commit: put skills in `.agents/skills/` and the tool-specific folders listed in `templates/tool-pointers.md`; commit on a dedicated branch `chore/agentic-setup` and let the developer open the PR.
-- Answer 13 sets `{{RECORD_VIDEO}}` in the `verify` and `bugfix` skills. Off = no video steps run unless the developer asks for video on that run.
+- Answer 13 sets `{{RECORD_VIDEO}}` in the `verify` and `bugfix` skills. Off = no video steps run unless the developer asks for video on that run; keep the video steps and `{{VIDEO_COMMANDS}}` in the skills anyway, and drop them only if the project has no UI. Videos can show client data or PII: they stay outside git and are shared only as answer 11 allows.
 - Answer 4 decides which pointer files and subagent formats to generate. Do not generate files for tools nobody uses.

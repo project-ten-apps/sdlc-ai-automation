@@ -67,10 +67,12 @@ If there are none, write "None as of {{DATE}}."
 
 Builds, emulator/simulator boot and instrumented tests can outlast the agent's command timeout. Never wait for them with a fixed `sleep`.
 
-1. Start the command in the background with output to a log file: {{BACKGROUND_RUN}}  <!-- the agent's own background mode if it has one; else tmux (`tmux new -d -s build '<cmd> 2>&1 | tee build.log'`) on macOS/Linux, `Start-Process -NoNewWindow -RedirectStandardOutput build.log -RedirectStandardError build.err.log` on Windows -->
-2. Poll the end of the log every 15-30 s and report progress to the developer on long runs.
-3. Done means an explicit marker, not elapsed time: {{DONE_MARKERS}}  <!-- e.g. `BUILD SUCCESSFUL` / `BUILD FAILED`, `sys.boot_completed` = 1, test summary line, process exit -->
-4. On the first error line, stop waiting, read the full error and act on it.
+If your agent has its own background-command tool, use it. Otherwise use the recipe below, which records the exit code as the last log line. Logs go outside the worktree: `{{LOG_DIR}}`.
+
+1. Start: {{BACKGROUND_RUN}}  <!-- macOS/Linux: `nohup sh -c '<cmd> > {{LOG_DIR}}/<name>.log 2>&1; echo "EXIT $?" >> {{LOG_DIR}}/<name>.log' > /dev/null 2>&1 &`; Windows: `Start-Process -FilePath cmd.exe -ArgumentList '/c', '<cmd> > {{LOG_DIR}}\<name>.log 2>&1 && (echo EXIT 0 >> {{LOG_DIR}}\<name>.log) || (echo EXIT 1 >> {{LOG_DIR}}\<name>.log)' -WindowStyle Hidden` -->
+2. Poll the end of the log every 15-30 s (`tail -n 40 <log>` / `Get-Content <log> -Tail 40`) and report progress to the developer on long runs.
+3. Done means an explicit marker, not elapsed time: `EXIT <n>` for every command, plus {{DONE_MARKERS}}  <!-- from the stack guide, e.g. `BUILD SUCCESSFUL` / `BUILD FAILED`, `sys.boot_completed` = 1, test summary line -->
+4. Error-looking lines before the marker (warnings, test names) are not the result; wait for the failure marker or `EXIT` non-zero, then read the full error. If you abandon a run, kill it so it does not hold locks (Gradle daemon, simulator).
 
 ## Conventions
 

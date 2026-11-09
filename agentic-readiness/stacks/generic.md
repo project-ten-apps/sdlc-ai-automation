@@ -21,7 +21,7 @@ Run each command once; a command that is documented but fails is a red audit ite
 
 ## Verification target
 
-- Web: start the dev server and drive it with the agent's browser tool or Playwright; screenshots per step; check the console for errors. Video (only when video evidence is on): Playwright `recordVideo` on the browser context.
+- Web: start the dev server and drive it with the agent's browser tool or Playwright; screenshots per step; check the console for errors. Video (only when video evidence applies): Playwright `browser.newContext({ recordVideo: { dir: '<report-dir>/video' } })`; the file is written on `await context.close()`, path from `page.video().path()` (test runner: `use: { video: 'on' }`). The agent's own browser tool usually cannot record: note "video not available" in the report.
 - Dev servers, watchers and long builds run in the background with a log file (AGENTS.md "Long-running commands"); done marker is the "ready"/"listening" line, not a sleep.
 - Backend: run the service and hit it with the integration tests or `curl` scenarios from the spec.
 - CLI/library: run the test suite and a usage example from the README.
