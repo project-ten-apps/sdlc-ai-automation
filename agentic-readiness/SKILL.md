@@ -34,6 +34,7 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
 
 1. Detect the stack and versions from build files. Load the matching guide: `stacks/android.md`, `stacks/flutter.md`, or `stacks/generic.md` for anything else.
 2. Check: existing AGENTS.md / CLAUDE.md / GEMINI.md / `.cursor/rules` / `.github/copilot-instructions.md`; tests (count, kinds, do they pass); CI; linters/formatters; build reproducibility (wrapper scripts and lockfiles committed?); secrets in the tree and in git history; branch divergence (main vs active feature branches, unmerged work).
+   - Executable rules: is there one command that runs lint, tests and architecture checks, and is it enforced? Red: no single gate command. Amber: linters exist but are already red on the base branch, or nothing runs them before push or merge. Green: one gate command, green on the base branch, enforced by a required CI check or a pre-push hook. Check that each linter actually covers the main sources (its task list, report or file count includes them; see the stack guide); a green linter that checks no source files counts as missing.
 3. Access, git hygiene and secret protection:
    - Where can an agent build and run tests: this machine, a cloud sandbox (SDK available?), a remote session on the developer's machine, or a build host over SSH (e.g. a team Mac mini or a Linux box with KVM for the emulator)? Run the build once to prove it. If nowhere, write "agent cannot build or test" as a red row; every later "passes" then needs a human run.
    - SSH build host, only if the developer names one or the local machine cannot build (e.g. iOS on Windows): check `ssh -o BatchMode=yes -o ConnectTimeout=10 <host> true`, the SDK and device/emulator on the host, and how code gets there (push the branch and pull on the host, or `rsync` excluding build output and secrets; recreate only SDK paths and debug config on the host). In audit-only mode use rsync or ask before pushing. Build once on the host. Record the host and sync method in the audit row; step 5 uses it for the `verify` target. Signing keys or client code on a shared host go into the security audit as a finding.
@@ -54,6 +55,7 @@ Install and verify the tools from the stack guide at the scope the questionnaire
 
 - All stacks: Context7 (MCP, or `npx ctx7` / official docs as fallback) for current library and API docs; the spec-driven framework chosen in the questionnaire (default OpenSpec: `npm i -g @fission-ai/openspec`, `openspec init`).
 - Stack-specific tools: see the stack guide.
+- Quality gate: one command that runs lint, tests and architecture rules with baselines, enforced before push or merge. Follow `quality-gate.md` and the stack guide's recipe; turn the project's written conventions into architecture-rule tests there. If build-config changes are not approved yet, propose it as stage 0 instead.
 
 Verify each tool with one real call (list servers, run a sample query) and record the result.
 
@@ -72,7 +74,7 @@ Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP 
 
 Document the current stack (versions, code metrics, language split), risks, and a staged migration:
 
-- Stage 0, build foundation: wrapper/pinned SDK, secrets out of the build, version catalog or lockfile, linters with a baseline, test infrastructure, CI.
+- Stage 0, build foundation: wrapper/pinned SDK, secrets out of the build, version catalog or lockfile, test infrastructure, the quality gate (`quality-gate.md`) as a CI job or a local gate with hooks.
 - Then architecture and dependency upgrades; UI modernisation last.
 - New features go straight to the target architecture.
 
@@ -80,7 +82,7 @@ Estimate each stage in agent hours plus human review hours, and state that estim
 
 ## 7. Pilot
 
-STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down, then update AGENTS.md and the skills. Final report: readiness before/after, what is left, what needs the client.
+STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down and which review comments the gate should have caught (candidates for new rules), then update AGENTS.md, the skills and the gate. Final report: readiness before/after, what is left, what needs the client.
 
 ## Validate the report
 

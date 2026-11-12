@@ -19,6 +19,8 @@ Manifest and lock files (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml
 
 Run each command once; a command that is documented but fails is a red audit item.
 
+Quality gate (see `../quality-gate.md`): wrap format check, lint/type check and unit tests in one entry point the stack already uses (`npm run gate`, a `make`/`just` target, a script). Prefer tools with a baseline or suppression file (`eslint --suppressions-location`, `ruff` per-file ignores, `golangci-lint` `new-from-rev`) so legacy issues do not block new code.
+
 ## Verification target
 
 - Web: start the dev server and drive it with the agent's browser tool or Playwright; screenshots per step; check the console for errors. Video (only when video evidence applies): Playwright `browser.newContext({ recordVideo: { dir: '<report-dir>/video' } })`; the file is written on `await context.close()`, path from `page.video().path()` (test runner: `use: { video: 'on' }`). The agent's own browser tool usually cannot record: note "video not available" in the report.

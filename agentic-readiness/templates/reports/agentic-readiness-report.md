@@ -19,6 +19,7 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | 11 | Client concerns | |
 | 12 | Tool install scope | |
 | 13 | Video evidence | |
+| 14 | CI that can block merges | |
 
 ## Audit (before)
 
@@ -29,6 +30,7 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | Tests (count, pass rate) | | | |
 | CI | | | |
 | Lint / format | | | |
+| Executable rules (single gate, enforced) | | | |
 | Secrets | | | |
 | Secret read protection (per agent) | | | |
 | Agent can build and test (where: local / cloud sandbox / remote session / SSH host) | | | |

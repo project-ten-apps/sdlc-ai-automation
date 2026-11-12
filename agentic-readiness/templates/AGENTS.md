@@ -11,6 +11,7 @@ Instructions for AI coding agents working in this repository. Tool-specific file
 - Never print, copy or log full secret values. Never add new secrets to the repo.
 - Evidence before claims: "done", "passes", "fixed" must be backed by the command you ran and its result.
 - Keep diffs minimal and in scope; no drive-by refactoring.
+- Run the quality gate before every push. Never bypass hooks (`--no-verify`, changing `core.hooksPath`) or grow a baseline to get green; a red gate goes to the developer.
 - No feature changelogs or task history in this file; it describes how the project works now. History lives in git, specs and PRs.
 
 ## Needs approval
@@ -54,6 +55,8 @@ All verified on {{DATE}}.
 | Integration / instrumented tests | {{CMD_INTEGRATION_TEST}} |
 | Lint / analyze | {{CMD_LINT}} |
 | Format | {{CMD_FORMAT}} |
+| Quality gate (before every push) | {{CMD_GATE}} |
+| Install git hooks (once per clone) | {{CMD_INSTALL_HOOKS}} |
 
 Known-red checks (already failing on `{{BASE_BRANCH}}`; do not try to fix them unless asked, and do not count them as your regressions):
 
