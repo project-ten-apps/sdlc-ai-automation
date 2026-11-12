@@ -51,7 +51,9 @@
 .PARAMETER Plugins
     Claude Code plugins from the official marketplace (claude-plugins-official) to
     enable in ~/.claude/settings.json (enabledPlugins), so Claude Code installs them
-    for every project on this machine. Default: security-guidance, claude-security.
+    for every project on this machine. Default: claude-security. security-guidance
+    reviews every turn and commit with an extra model call, so it is opt-in:
+    -Plugins claude-security,security-guidance.
     Applied when Targets includes 'claude' or when you pass -Plugins explicitly.
     Both need Python 3.9+ on PATH. A plugin you set to false yourself stays off
     unless you add -Force. The previous settings file is kept as settings.json.bak.
@@ -74,7 +76,7 @@
 .EXAMPLE
     ./install.ps1 -SnippetPath ./dist/agentic-readiness.rules.md -Targets @()
 .EXAMPLE
-    ./install.ps1 -Targets @() -Plugins security-guidance,claude-security
+    ./install.ps1 -Plugins claude-security,security-guidance
 .EXAMPLE
     ./install.ps1 -NoPlugins
 .EXAMPLE
@@ -96,7 +98,7 @@ param(
     [string[]]$Instructions = @(),
 
     [ValidateSet('security-guidance', 'claude-security')]
-    [string[]]$Plugins = @('security-guidance', 'claude-security'),
+    [string[]]$Plugins = @('claude-security'),
 
     [switch]$NoPlugins,
 
@@ -187,7 +189,7 @@ function Set-ClaudePlugins([string[]]$Names, [bool]$Remove) {
         Write-Host "  written to $file (previous version: settings.json.bak)"
         if (-not $Remove) {
             $py = Get-Command python, python3, py -ErrorAction SilentlyContinue | Select-Object -First 1
-            if (-not $py) { Write-Warning 'Python 3.9+ was not found on PATH; both security plugins need it.' }
+            if (-not $py) { Write-Warning 'Python 3.9+ was not found on PATH; the security plugins need it.' }
             Write-Host '  Claude Code installs them on the next start; in a running session run /reload-plugins.'
         }
     }

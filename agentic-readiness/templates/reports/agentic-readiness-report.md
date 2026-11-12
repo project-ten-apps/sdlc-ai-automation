@@ -46,6 +46,8 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 
 See `security-report.md`. Critical: N, High: N, Medium: N, Low: N. Client-side items: ...
 
+Claude Code plugins: `claude-security` enabled (scope). `security-guidance`: relevance High/Medium/Low because ...; developer chose team / only me / no.
+
 ## Generated files
 
 | File | Committed or local |
