@@ -18,6 +18,7 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | 10 | Verification device | |
 | 11 | Client concerns | |
 | 12 | Tool install scope | |
+| 13 | Video evidence | |
 
 ## Audit (before)
 
@@ -30,7 +31,7 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | Lint / format | | | |
 | Secrets | | | |
 | Secret read protection (per agent) | | | |
-| Agent can build and test (where) | | | |
+| Agent can build and test (where: local / cloud sandbox / remote session / SSH host) | | | |
 | Git identity and line endings | | | |
 | Code map / docs | | | |
 | Instruction size (context hygiene) | | | |

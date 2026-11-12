@@ -3,7 +3,7 @@ name: agentic-readiness
 description: Use when preparing an existing codebase (Android/Kotlin, Flutter/Dart or any other stack) for agentic AI development - questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan, pilot task. Works with any coding agent that reads Agent Skills or AGENTS.md.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Agentic readiness
@@ -35,7 +35,8 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
 1. Detect the stack and versions from build files. Load the matching guide: `stacks/android.md`, `stacks/flutter.md`, or `stacks/generic.md` for anything else.
 2. Check: existing AGENTS.md / CLAUDE.md / GEMINI.md / `.cursor/rules` / `.github/copilot-instructions.md`; tests (count, kinds, do they pass); CI; linters/formatters; build reproducibility (wrapper scripts and lockfiles committed?); secrets in the tree and in git history; branch divergence (main vs active feature branches, unmerged work).
 3. Access, git hygiene and secret protection:
-   - Where can an agent build and run tests: this machine, a cloud sandbox (SDK available?), or a remote session on the developer's machine? Run the build once to prove it. If nowhere, write "agent cannot build or test" as a red row; every later "passes" then needs a human run.
+   - Where can an agent build and run tests: this machine, a cloud sandbox (SDK available?), a remote session on the developer's machine, or a build host over SSH (e.g. a team Mac mini or a Linux box with KVM for the emulator)? Run the build once to prove it. If nowhere, write "agent cannot build or test" as a red row; every later "passes" then needs a human run.
+   - SSH build host, only if the developer names one or the local machine cannot build (e.g. iOS on Windows): check `ssh -o BatchMode=yes -o ConnectTimeout=10 <host> true`, the SDK and device/emulator on the host, and how code gets there (push the branch and pull on the host, or `rsync` excluding build output and secrets; recreate only SDK paths and debug config on the host). In audit-only mode use rsync or ask before pushing. Build once on the host. Record the host and sync method in the audit row; step 5 uses it for the `verify` target. Signing keys or client code on a shared host go into the security audit as a finding.
    - Git identity: take name/email from `git log -5 --format='%an <%ae>'` and compare with `git config user.name/user.email`; flag a mismatch instead of committing under the wrong author. Check `.gitattributes` has `* text=auto eol=lf` (plus `*.bat`/`*.cmd eol=crlf` if any) so Windows agents do not produce whole-file CRLF diffs.
    - Secret read protection: list credential files that exist in the working tree (tracked or ignored, e.g. `.env*`, `*.jks`, `*.keystore`, `*.p12`, `*.pem`, `*.key`, `key.properties`, `keystore.properties`, `local.properties`, `secrets.*`, `service-account*.json`). For each agent in use, check that a deny/ignore rule from `templates/tool-pointers.md` ("Secret read protection") covers them. Not covered = amber; covered only by gitignore = amber (agents still read ignored files); real secrets readable and no rule at all = red. The fix is part of step 4.
 4. Instruction size (context hygiene): count lines of every existing instruction file and skill. Green: AGENTS.md/CLAUDE.md up to 200 lines, each skill up to ~15 steps and 500 lines. Amber: instruction file 200-500 lines or skills mixing several workflows. Red: over 500 lines, or one file describing the whole organisation. Apply the same limits to everything you generate later.
@@ -44,7 +45,7 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
 ## 2. Project instructions and code map
 
 1. Build the code map with **graphify** (skill or CLI, output in `graphify-out/`, gitignored). If graphify is unavailable, say so in the report and produce a module map from the build files and directory tree instead; never invent structure.
-2. Write `AGENTS.md` from `templates/AGENTS.md`: stack, module map, key flows, exact build/test/lint commands (verified by running them), known-red checks (commands that already fail on the base branch, with the failure), typical feature file layout taken from one real feature, preferred UI stack, what needs approval, conventions, hard rules from the questionnaire, tools section. No changelogs or task history in it.
+2. Write `AGENTS.md` from `templates/AGENTS.md`: stack, module map, key flows, exact build/test/lint commands (verified by running them), known-red checks (commands that already fail on the base branch, with the failure), typical feature file layout taken from one real feature, preferred UI stack, what needs approval, long-running commands (background recipe, log folder outside the worktree, done markers from the stack guide; run one build that way to prove it), conventions, hard rules from the questionnaire, tools section. No changelogs or task history in it.
 3. Add thin per-tool pointers so every agent reads the same AGENTS.md (see `templates/tool-pointers.md`): `CLAUDE.md` importing it (`templates/CLAUDE.md`), and only for the tools the team uses, `GEMINI.md`/settings, Copilot and Cursor pointers.
 
 ## 3. Tools
@@ -62,7 +63,7 @@ Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP 
 
 ## 5. Project process: skills and subagents
 
-1. Generate project skills from `templates/skills/*/SKILL.template.md`: replace every `{{PLACEHOLDER}}` with values from AGENTS.md and the stack guide; delete sections that do not apply; save each as `<skills-dir>/<name>/SKILL.md`. Prefix names with the project key where a generic name could clash with the developer's global skills (e.g. `acme-code-review`).
+1. Generate project skills from `templates/skills/*/SKILL.template.md`: replace every `{{PLACEHOLDER}}` with values from the questionnaire, AGENTS.md and the stack guide (`{{VIDEO_COMMANDS}}` from the stack guide's Video item); delete sections that do not apply, but keep the video steps even when answer 13 is off; save each as `<skills-dir>/<name>/SKILL.md`. Prefix names with the project key where a generic name could clash with the developer's global skills (e.g. `acme-code-review`).
 2. Generate subagents from `templates/agents/*.md` for the tools in use (see `templates/tool-pointers.md` for each tool's folder and format): spec-writer, developer, code-reviewer, security-reviewer (mandatory, read-only), qa-verifier.
 3. Flow: spec-writer -> human approval of the spec -> developer (strict TDD) -> code-reviewer and security-reviewer in parallel -> qa-verifier -> report.
 4. Location: `.agents/skills/` (plus each tool's own folder if it does not read `.agents/skills`) only if committing is allowed; otherwise keep them local and list them in `.git/info/exclude`.
@@ -95,4 +96,5 @@ It checks that required sections exist and are filled, no `{{PLACEHOLDER}}` is l
 - Respect the commit decision from step 0 everywhere. When in doubt, keep it local (`.git/info/exclude`, local/user scope settings).
 - Never print or copy full secret values.
 - One worktree per work stream, so local agentic files do not leak into feature branches.
+- Long builds, emulator boot and instrumented tests run in the background with a log file and an explicit done marker, never behind a fixed `sleep`.
 - Evidence before claims: every "passes", "works", "installed" in a report comes with the command and its output summary.

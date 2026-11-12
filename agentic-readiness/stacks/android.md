@@ -31,6 +31,9 @@ If `gradlew` scripts are missing or gitignored, flag it as a red item (build not
 3. Drive UI with `adb shell input tap|text|swipe`, find elements via `adb shell uiautomator dump` + `adb pull /sdcard/window_dump.xml`.
 4. Screenshot each step: `adb exec-out screencap -p > step-N.png`.
 5. After each scenario: scan logcat for `FATAL EXCEPTION`, `ANR`, errors from the package.
+6. Video (only when video evidence applies): before the first step start `nohup adb shell screenrecord --bit-rate 4000000 /sdcard/scenario-N.mp4 > rec.log 2>&1 & echo $! > rec.pid` (log and pid in the log folder; Windows: `Start-Process adb -ArgumentList 'shell','screenrecord','--bit-rate','4000000','/sdcard/scenario-N.mp4' -WindowStyle Hidden -PassThru` and keep its `Id`). After the last step: `adb shell pkill -INT screenrecord`, wait until the host process from the pid has exited (poll, no fixed sleep), then `adb pull /sdcard/scenario-N.mp4 "<report-dir>/scenario-N.mp4"` (full target file name, quoted; a trailing `\"` breaks the path in Windows PowerShell 5.1) and `adb shell rm /sdcard/scenario-N.mp4`. Limits: 3 minutes per file and no audio, so split longer scenarios.
+
+Long-running: `./gradlew` builds and `connected*AndroidTest` go to the background (see AGENTS.md "Long-running commands"); done markers are `BUILD SUCCESSFUL` / `BUILD FAILED` and `EXIT <n>`. Emulator boot: poll `adb shell getprop sys.boot_completed`.
 
 ## Security hotspots
 
