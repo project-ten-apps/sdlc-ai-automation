@@ -24,7 +24,7 @@ Paths below are relative to this skill's folder. Read a supporting file only whe
 ## Modes
 
 - **Full** (default): steps 0-7.
-- **Audit only** (read-only): use when the developer asks to "assess", "audit", "check readiness", or when the client has not approved agentic work yet. Run step 0 (questions 1, 4, 11 only), step 1 and the read-only checks of step 4. Do not create, edit or install anything in the repository or the user's tool config; write only the report, outside the repository (e.g. `../<repo>-agentic/agentic-readiness-report.md`). Skip sections 2, 3, 5, 6, 7 of the report except a short "Recommended next steps" list.
+- **Audit only** (read-only): use when the developer asks to "assess", "audit", "check readiness", or when the client has not approved agentic work yet. Run step 0 (questions 1, 4, 11 only), step 1 and the read-only checks of step 4. Do not create, edit or install anything in the repository or the user's tool config; write only the report, outside the repository (e.g. `../<repo>-agentic/agentic-readiness-report.md`). Score the readiness level too. Skip sections 2, 3, 5, 6, 7 of the report except a short "Recommended next steps" list, ordered by what unlocks the next level.
 
 ## 0. Questionnaire - the only stop before work
 
@@ -42,6 +42,7 @@ Ask the questions in `questionnaire.md` once, offering the defaults. Record the 
    - Secret read protection: list credential files that exist in the working tree (tracked or ignored, e.g. `.env*`, `*.jks`, `*.keystore`, `*.p12`, `*.pem`, `*.key`, `key.properties`, `keystore.properties`, `local.properties`, `secrets.*`, `service-account*.json`). For each agent in use, check that a deny/ignore rule from `templates/tool-pointers.md` ("Secret read protection") covers them. Not covered = amber; covered only by gitignore = amber (agents still read ignored files); real secrets readable and no rule at all = red. The fix is part of step 4.
 4. Instruction size (context hygiene): count lines of every existing instruction file and skill. Green: AGENTS.md/CLAUDE.md up to 200 lines, each skill up to ~15 steps and 500 lines. Amber: instruction file 200-500 lines or skills mixing several workflows. Red: over 500 lines, or one file describing the whole organisation. Apply the same limits to everything you generate later.
 5. Fill in the audit section of the report: red/amber/green per area plus the gap list.
+6. Score the readiness level with `readiness-levels.md` (Factory's pillars and levels, 80% rule) and fill "Readiness level" in the report: passed/applicable per level and the failed criteria by number.
 
 ## 2. Project instructions and code map
 
@@ -82,7 +83,7 @@ Estimate each stage in agent hours plus human review hours, and state that estim
 
 ## 7. Pilot
 
-STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down and which review comments the gate should have caught (candidates for new rules), then update AGENTS.md, the skills and the gate. Final report: readiness before/after, what is left, what needs the client.
+STOP and ask the developer for one real task. Run it through the full cycle (`new-feature` or `bugfix`). Record what slowed the agent down and which review comments the gate should have caught (candidates for new rules), then update AGENTS.md, the skills and the gate. Final report: readiness level before/after, the "Ready for agentic development" checklist from `readiness-levels.md` (each item yes/partial/no with evidence), what is left, what needs the client.
 
 ## Validate the report
 
@@ -91,7 +92,7 @@ Before handing over any report (audit-only or full), run the validator and fix e
 - Windows: `pwsh <skill-dir>/scripts/validate-report.ps1 -Path <report> [-Mode Audit] [-ProjectRoot <repo>]`
 - macOS/Linux: `sh <skill-dir>/scripts/validate-report.sh <report> [audit|full] [<repo>]`
 
-It checks that required sections exist and are filled, no `{{PLACEHOLDER}}` is left, every audit row has a red/amber/green status, and (with the project root) that AGENTS.md/CLAUDE.md stay within the size limits.
+It checks that required sections exist and are filled, no `{{PLACEHOLDER}}` is left, every audit row has a red/amber/green status, the readiness level is stated, every final checklist item is yes/partial/no (full mode), and (with the project root) that AGENTS.md/CLAUDE.md stay within the size limits.
 
 ## Rules
 

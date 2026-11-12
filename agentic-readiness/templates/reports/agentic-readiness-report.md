@@ -40,6 +40,22 @@ Date: {{DATE}} | Branch: {{BRANCH}} | Agent(s): {{AGENTS_USED}} | Mode: {{MODE}}
 | Branch hygiene | | | |
 | Verification device | | | |
 
+## Readiness level
+
+Scale and criteria: `readiness-levels.md` (Factory's 9 pillars and 5 levels, 80% of a level's criteria to reach it).
+
+Level: N (name)  <!-- e.g. "Level: 2 (Documented)" -->
+
+| Level | Passed | Applicable | % |
+|---|---|---|---|
+| 1 Functional | | | |
+| 2 Documented | | | |
+| 3 Standardized | | | |
+| 4 Optimized | | | |
+| 5 Autonomous | | | |
+
+Failed criteria (by number): ...
+
 ## Tools installed
 
 | Tool | Scope | Verified by | Result |
@@ -67,7 +83,24 @@ Task: | Result: | What slowed the agent down: | Changes made to AGENTS.md / skil
 
 ## Readiness after
 
-Same table as the audit, with the new status.
+Same table as the audit, with the new status, and the new readiness level: `Level: N (name)`.
+
+## Ready for agentic development
+
+| # | Item | Status | Evidence |
+|---|---|---|---|
+| 1 | Agent builds and runs tests (where) | | |
+| 2 | AGENTS.md single source, verified, within limits; pointers for every agent | | |
+| 3 | Known-red listed; nothing else red on base | | |
+| 4 | Secrets out of the tree and read-protected per agent | | |
+| 5 | One quality gate command, enforced | | |
+| 6 | Agent verifies on device/emulator/browser with evidence | | |
+| 7 | Project skills and subagents installed (incl. verify, pr-ready) | | |
+| 8 | Human-only decisions and needs-approval list agreed | | |
+| 9 | Git safe for agents: identity, line endings, worktree per task | | |
+| 10 | Pilot task done, lessons applied | | |
+
+Status: yes / partial / no. Every `no` goes to "Open items".
 
 ## Recommended next steps
 

@@ -20,6 +20,7 @@ FNR == NR { tpl[trim($0)] = 1; next }
   if (match(line, /\{\{[A-Z0-9_]+\}\}/)) err[++e] = "unfilled placeholder on line " n ": " substr(line, RSTART, RLENGTH)
   if (line ~ /^##[ \t]/) { sec = trim(substr(line, 3)); seen[sec] = 1; sep = 0; next }
   if (sec == "") next
+  if (sec == "Readiness level" && line ~ /^[ \t]*Level:[ \t]*[1-5]([^0-9]|$)/) haslevel = 1
   t = line; gsub(/<!--.*-->/, "", t); t = trim(t)
   if (t != "" && t !~ /^\|[ \t\-:|]+\|$/ && !(trim(line) in tpl)) filled[sec] = 1
   if (t ~ /^\|[ \t\-:|]+\|$/) { sep = 1; next }
@@ -32,19 +33,26 @@ FNR == NR { tpl[trim($0)] = 1; next }
     if (s !~ /^(red|amber|green)$/) err[++e] = "audit row \x27" c[1] "\x27 needs status red, amber or green (found \x27" c[2] "\x27)"
     else if (k > 2 && c[3] == "") warn[++w] = "audit row \x27" c[1] "\x27 has no evidence"
   }
+  if (sec == "Readiness level" && (c[2] == "" || c[3] == "")) warn[++w] = "readiness level row \x27" c[1] "\x27 has no passed/applicable counts"
+  if (sec == "Ready for agentic development") {
+    s = tolower(c[3])
+    if (s !~ /^(yes|partial|no)$/) err[++e] = "checklist item " c[1] " needs status yes, partial or no (found \x27" s "\x27)"
+    else if (k > 3 && c[4] == "") warn[++w] = "checklist item " c[1] " has no evidence"
+  }
   if (sec == "Questionnaire answers") {
     if (mode == "audit" && c[1] != "1" && c[1] != "4" && c[1] != "11") next
     if (k < 3 || c[3] == "") err[++e] = "questionnaire answer #" c[1] " is empty"
   }
 }
 END {
-  req = "Questionnaire answers|Audit (before)|Security summary|Recommended next steps"
-  if (mode != "audit") req = req "|Tools installed|Generated files|Migration plan|Pilot (after)|Readiness after"
+  req = "Questionnaire answers|Audit (before)|Readiness level|Security summary|Recommended next steps"
+  if (mode != "audit") req = req "|Tools installed|Generated files|Migration plan|Pilot (after)|Readiness after|Ready for agentic development"
   m = split(req, r, "|")
   for (i = 1; i <= m; i++) {
     if (!(r[i] in seen)) err[++e] = "missing section: ## " r[i]
     else if (!(r[i] in filled)) err[++e] = "section not filled in: ## " r[i]
   }
+  if (("Readiness level" in seen) && !haslevel) err[++e] = "## Readiness level needs a line \x27Level: <1-5> (<name>)\x27"
   if (("Audit (before)" in seen) && rows == 0) err[++e] = "audit table has no rows"
   for (i = 1; i <= w; i++) print "WARN:  " warn[i]
   for (i = 1; i <= e; i++) print "ERROR: " err[i]
