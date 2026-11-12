@@ -11,6 +11,7 @@ agentic-readiness/
   SKILL.md                 short workflow (steps 0-7)
   questionnaire.md         the one up-front question round, with defaults
   quality-gate.md          one gate command, baselines, architecture rules, enforcement
+  readiness-levels.md      Factory scale: 9 pillars, 5 levels, criteria, final checklist
   scripts/                 validate-report.ps1 / .sh: checks the readiness report
   stacks/                  android.md, flutter.md, generic.md
   templates/

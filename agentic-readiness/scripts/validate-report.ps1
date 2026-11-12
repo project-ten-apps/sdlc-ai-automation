@@ -69,9 +69,9 @@ function Test-HasContent($Body) {
     return $false
 }
 
-$required = @('Questionnaire answers', 'Audit (before)', 'Security summary', 'Recommended next steps')
+$required = @('Questionnaire answers', 'Audit (before)', 'Readiness level', 'Security summary', 'Recommended next steps')
 if ($Mode -eq 'Full') {
-    $required += @('Tools installed', 'Generated files', 'Migration plan', 'Pilot (after)', 'Readiness after')
+    $required += @('Tools installed', 'Generated files', 'Migration plan', 'Pilot (after)', 'Readiness after', 'Ready for agentic development')
 }
 
 foreach ($s in $required) {
@@ -94,6 +94,25 @@ if ($null -ne $audit) {
         $status = if ($r.Count -gt 1) { $r[1].ToLower() } else { '' }
         if ($status -notmatch '^(red|amber|green)$') { $errors.Add("audit row '$($r[0])' needs status red, amber or green (found '$($r[1])')") }
         elseif ($r.Count -gt 2 -and -not $r[2]) { $warnings.Add("audit row '$($r[0])' has no evidence") }
+    }
+}
+
+# Readiness level
+$lvl = Get-Section 'Readiness level'
+if ($null -ne $lvl) {
+    if (-not ($lvl | Where-Object { $_ -match '^\s*Level:\s*[1-5](\D|$)' })) { $errors.Add("## Readiness level needs a line 'Level: <1-5> (<name>)'") }
+    foreach ($r in (Get-TableRows $lvl)) {
+        if ($r.Count -lt 4 -or -not $r[1] -or -not $r[2]) { $warnings.Add("readiness level row '$($r[0])' has no passed/applicable counts") }
+    }
+}
+
+# Ready for agentic development checklist
+$ready = Get-Section 'Ready for agentic development'
+if ($null -ne $ready) {
+    foreach ($r in (Get-TableRows $ready)) {
+        $status = if ($r.Count -gt 2) { $r[2].ToLower() } else { '' }
+        if ($status -notmatch '^(yes|partial|no)$') { $errors.Add("checklist item $($r[0]) needs status yes, partial or no (found '$status')") }
+        elseif ($r.Count -gt 3 -and -not $r[3]) { $warnings.Add("checklist item $($r[0]) has no evidence") }
     }
 }
 
