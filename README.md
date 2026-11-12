@@ -71,6 +71,8 @@ Notes:
 
 In the target repository, ask your agent: "Prepare this repo for agentic development". For a read-only assessment (nothing created or installed in the repo, report written outside it), ask: "Audit this repo for agentic readiness, audit only". For the full setup it asks the questionnaire once, then runs the audit, writes AGENTS.md and pointers, installs tools, runs the security audit, generates project skills and subagents, writes the migration plan, and stops to pick a pilot task.
 
+Screen video as verification evidence (before/after for bugfixes, or every smoke scenario) is off by default; turn it on with questionnaire answer 13 or ask for it on a single verify run. Long builds and emulator boots run in the background with a log file instead of fixed waits, and the audit can use a build host over SSH when the local machine cannot build or run the device.
+
 ## Updating
 
 Edit files here and commit. With `-Mode Link`, every tool sees the change immediately (restart running sessions). With `-Mode Copy`, re-run `./install.ps1 -Mode Copy -Force`.

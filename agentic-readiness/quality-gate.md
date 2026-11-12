@@ -30,7 +30,7 @@ Review comments on agent-written code are mostly rules the team already has in i
 
 ## Enforcement
 
-Questionnaire answer 13 decides where the gate is enforced.
+Questionnaire answer 14 decides where the gate is enforced.
 
 - **CI can block merges:** run the gate command as a required check on every PR. The hook below is still useful for faster feedback but optional.
 - **No such CI:** a git `pre-push` hook is the gate. It fires on every push, whichever agent or human runs it. Template: `templates/githooks/pre-push` (replace `{{CMD_GATE}}`, keep LF line endings and the executable bit: `git update-index --chmod=+x .githooks/pre-push`). The gate runs on the checkout, so the hook rejects pushes of anything other than the checked-out HEAD on a clean tree (`git push --all`, other branches, uncommitted changes); push each branch from its own worktree.

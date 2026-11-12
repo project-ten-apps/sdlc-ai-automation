@@ -7,6 +7,9 @@ description: Use to verify a {{PROJECT_NAME}} change end to end before a PR - qu
 
 Chat in {{CHAT_LANGUAGE}}; the report file is in {{DOC_LANGUAGE}}. Runs in the feature worktree. Never commit.
 Evidence before claims: every result in the report comes from a command you ran in this session.
+Video evidence: {{RECORD_VIDEO}}  <!-- off / bugfixes only / every smoke scenario; the developer can override it for one run -->
+
+Long-running commands (build, emulator boot, instrumented tests) run in the background with output to a log file; never wait with a fixed `sleep`. Follow the "Long-running commands" section of AGENTS.md.
 
 ## 1. Environment
 
@@ -27,6 +30,7 @@ Evidence before claims: every result in the report comes from a command you ran 
 1. Scenarios: the WHEN/THEN scenarios of the current spec change, plus any smoke checklist in `docs/`.
 2. Install and launch the app on the target; clear logs first.
 3. Drive each scenario ({{UI_DRIVER}}). Screenshot after each step.
+   - Only if video evidence applies (every smoke scenario; bugfixes only = when `bugfix` called this run; or the developer asked for it on this run): start the recording before the first step and stop it after the last ({{VIDEO_COMMANDS}}), saving the file into the report folder. If recording fails, note it in the report and carry on with screenshots; a missing video never blocks verification.
 4. After each scenario, scan logs for crashes, ANRs/hangs and errors from the app.
 5. Project-specific checks tools cannot do: {{MANUAL_CHECKS}}  <!-- e.g. screenshots per locale and RTL, rotation/process recreation, back navigation, dark theme -->
 6. Steps that cannot be automated (camera, real payment, external login code) are marked "manual check needed" with the reason, never silently skipped.
@@ -37,7 +41,7 @@ Save `verify-report.md` with screenshots outside git (e.g. `../{{REPO_DIR}}-veri
 
 - One-line verdict: ready / failures / manual check needed.
 - Gate and integration tests: counts and failed tests with causes; logic without tests; guideline deviations.
-- Smoke: table of scenario, result, screenshot.
+- Smoke: table of scenario, result, screenshot, video (when recorded).
 - Crashes and errors from logs.
 - What to check manually and why.
 - PR description draft: what changed, how it was tested, test data or accounts for {{TEST_ENVIRONMENT}} (names only, never secrets), screenshots.

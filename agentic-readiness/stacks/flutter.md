@@ -32,6 +32,8 @@
 - Android emulator: see `android.md` (adb, AVD). iOS simulator (macOS): `xcrun simctl list`, `open -a Simulator`.
 - Integration tests are the main smoke vehicle: drive scenarios from the spec with `integration_test` + `flutter_test` finders; take screenshots via `IntegrationTestWidgetsFlutterBinding.takeScreenshot` or `adb exec-out screencap`.
 - Check `flutter logs` / logcat for uncaught exceptions and `FlutterError`.
+- Video (only when video evidence applies): Android as in `android.md`; iOS simulator: `nohup xcrun simctl io booted recordVideo --codec=h264 <report-dir>/scenario-N.mp4 > rec.log 2>&1 & echo $! > rec.pid`, wait for `Recording started` in `rec.log`; stop with `kill -INT $(cat rec.pid)` and wait until the process has exited. Never kill -9, or the file is unreadable.
+- Long-running: `flutter build`, `flutter test integration_test` and `pod install` go to the background (AGENTS.md "Long-running commands"); done markers are the build summary line, `All tests passed!` / `Some tests failed`, process exit.
 
 ## Security hotspots
 
