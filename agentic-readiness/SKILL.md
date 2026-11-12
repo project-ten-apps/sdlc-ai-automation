@@ -3,7 +3,7 @@ name: agentic-readiness
 description: Use when preparing an existing codebase (Android/Kotlin, Flutter/Dart or any other stack) for agentic AI development - questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan, pilot task. Works with any coding agent that reads Agent Skills or AGENTS.md.
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Agentic readiness
