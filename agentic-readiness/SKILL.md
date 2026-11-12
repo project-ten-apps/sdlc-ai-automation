@@ -58,7 +58,7 @@ Verify each tool with one real call (list servers, run a sample query) and recor
 
 ## 4. Security
 
-Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP MASVS for mobile, OWASP ASVS/Top 10 otherwise): secrets, keystores, signing configs, service config files, `.env`, git history. Record findings with severity and owner (our side / client side) and a short remediation plan. If anything is critical, draft a short message to the client explaining the risk and the proposed fix. Never print full secret values (first 4 characters + `file:line`). Then add the secret read-protection rules for every agent in use (`templates/tool-pointers.md`, "Secret read protection"), at the scope the commit decision allows, and verify one rule per agent by asking it to read a denied file.
+Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP MASVS for mobile, OWASP ASVS/Top 10 otherwise): secrets, keystores, signing configs, service config files, `.env`, git history. Record findings with severity and owner (our side / client side) and a short remediation plan. If anything is critical, draft a short message to the client explaining the risk and the proposed fix. Never print full secret values (first 4 characters + `file:line`). Then add the secret read-protection rules for every agent in use (`templates/tool-pointers.md`, "Secret read protection"), at the scope the commit decision allows, and verify one rule per agent by asking it to read a denied file. If the team uses Claude Code, enable the `security-guidance` and `claude-security` plugins (`templates/tool-pointers.md`, "Claude Code security plugins") and check them with `/plugin`.
 
 ## 5. Project process: skills and subagents
 

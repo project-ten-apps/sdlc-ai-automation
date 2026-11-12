@@ -48,6 +48,18 @@
 .PARAMETER HomeDir
     Folder used instead of your user profile (for testing).
 
+.PARAMETER Plugins
+    Claude Code plugins from the official marketplace (claude-plugins-official) to
+    enable in ~/.claude/settings.json (enabledPlugins), so Claude Code installs them
+    for every project on this machine. Default: security-guidance, claude-security.
+    Applied when Targets includes 'claude' or when you pass -Plugins explicitly.
+    Both need Python 3.9+ on PATH. A plugin you set to false yourself stays off
+    unless you add -Force. The previous settings file is kept as settings.json.bak.
+    With -Uninstall, plugins are disabled only if you pass -Plugins explicitly.
+
+.PARAMETER NoPlugins
+    Do not touch Claude Code plugins.
+
 .PARAMETER SnippetPath
     Write the pointer snippet to this file (for any other tool: paste it into its
     rules/instructions settings). Does not install anything else unless other
@@ -61,6 +73,10 @@
     ./install.ps1 -Targets @() -Instructions codex,windsurf
 .EXAMPLE
     ./install.ps1 -SnippetPath ./dist/agentic-readiness.rules.md -Targets @()
+.EXAMPLE
+    ./install.ps1 -Targets @() -Plugins security-guidance,claude-security
+.EXAMPLE
+    ./install.ps1 -NoPlugins
 .EXAMPLE
     ./install.ps1 -Uninstall -Targets all -Instructions claude,codex,gemini,copilot,opencode,windsurf
 #>
@@ -78,6 +94,11 @@ param(
 
     [ValidateSet('claude', 'codex', 'gemini', 'copilot', 'opencode', 'windsurf')]
     [string[]]$Instructions = @(),
+
+    [ValidateSet('security-guidance', 'claude-security')]
+    [string[]]$Plugins = @('security-guidance', 'claude-security'),
+
+    [switch]$NoPlugins,
 
     [string]$SnippetPath,
 
@@ -111,6 +132,65 @@ $InstructionFiles = [ordered]@{
     copilot  = Join-Path $UserHome '.copilot\copilot-instructions.md'
     opencode = Join-Path $UserHome '.config\opencode\AGENTS.md'
     windsurf = Join-Path $UserHome '.codeium\windsurf\memories\global_rules.md'
+}
+
+$PluginMarketplace = 'claude-plugins-official'
+$ClaudeSettingsFile = Join-Path $UserHome '.claude\settings.json'
+
+function Set-ClaudePlugins([string[]]$Names, [bool]$Remove) {
+    $file = $ClaudeSettingsFile
+    $settings = $null
+    if (Test-Path -LiteralPath $file) {
+        $raw = [IO.File]::ReadAllText($file)
+        if ($raw.Trim()) {
+            try { $settings = $raw | ConvertFrom-Json }
+            catch { throw "Cannot parse $file as JSON; fix it or run with -NoPlugins. $($_.Exception.Message)" }
+            if ($settings -isnot [System.Management.Automation.PSCustomObject]) {
+                throw "$file does not contain a JSON object; fix it or run with -NoPlugins."
+            }
+        }
+    }
+    if ($null -eq $settings) {
+        if ($Remove) { Write-Host "  no settings file at $file"; return }
+        $settings = New-Object PSObject
+    }
+    if (-not $settings.PSObject.Properties['enabledPlugins']) {
+        if ($Remove) { Write-Host '  no enabledPlugins in settings'; return }
+        $settings | Add-Member -NotePropertyName 'enabledPlugins' -NotePropertyValue (New-Object PSObject)
+    }
+    $enabled = $settings.enabledPlugins
+
+    $changed = $false
+    foreach ($name in $Names) {
+        $key = "$name@$PluginMarketplace"
+        $prop = $enabled.PSObject.Properties[$key]
+        if ($Remove) {
+            if ($prop) { $enabled.PSObject.Properties.Remove($key); $changed = $true; Write-Host "  removed $key" }
+            else { Write-Host "  $key not set" }
+        }
+        elseif (-not $prop) {
+            $enabled | Add-Member -NotePropertyName $key -NotePropertyValue $true
+            $changed = $true
+            Write-Host "  enabled $key"
+        }
+        elseif ($prop.Value -eq $true) { Write-Host "  $key already enabled" }
+        elseif ($Force) { Write-Host "  enabled $key (was $($prop.Value))"; $prop.Value = $true; $changed = $true }
+        else { Write-Host "  $key is set to $($prop.Value) in your settings; left as is (use -Force to enable)" }
+    }
+    if (-not $changed) { return }
+
+    if ($PSCmdlet.ShouldProcess($file, 'Update enabledPlugins')) {
+        $dir = Split-Path -Parent $file
+        if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        if (Test-Path -LiteralPath $file) { Copy-Item -LiteralPath $file -Destination "$file.bak" -Force }
+        [IO.File]::WriteAllText($file, ($settings | ConvertTo-Json -Depth 32) + "`n")
+        Write-Host "  written to $file (previous version: settings.json.bak)"
+        if (-not $Remove) {
+            $py = Get-Command python, python3, py -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $py) { Write-Warning 'Python 3.9+ was not found on PATH; both security plugins need it.' }
+            Write-Host '  Claude Code installs them on the next start; in a running session run /reload-plugins.'
+        }
+    }
 }
 
 function Test-ReparsePoint([string]$Path) {
@@ -222,6 +302,15 @@ foreach ($t in $Targets) {
 foreach ($tool in $Instructions) {
     Write-Host "[instructions:$tool]"
     Set-Snippet -File $InstructionFiles[$tool] -Remove:$Uninstall.IsPresent
+}
+
+# Claude Code plugins (user scope)
+$pluginsRequested = $PSBoundParameters.ContainsKey('Plugins')
+$applyPlugins = (-not $NoPlugins) -and $Plugins.Count -gt 0 -and (
+    $pluginsRequested -or ((-not $Uninstall) -and ($Targets -contains 'claude')))
+if ($applyPlugins) {
+    Write-Host "[plugins] $ClaudeSettingsFile"
+    Set-ClaudePlugins -Names $Plugins -Remove:$Uninstall.IsPresent
 }
 
 # Stand-alone snippet for any other tool

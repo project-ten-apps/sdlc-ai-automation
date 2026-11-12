@@ -58,6 +58,39 @@ key.properties  keystore.properties  local.properties  secrets.*  service-accoun
 
 Limits to state in the report: ignore files and read-deny rules usually do not cover shell commands (`cat .env`), so also deny or ask for shell reads of those paths where the tool allows it, and prefer keeping real secrets outside the repository (env vars, OS keychain, CI secrets). Verify each rule by asking the agent to read one denied file; it must refuse or fail. Mechanisms checked on 2026-10-28; re-check vendor docs if behaviour differs.
 
+## Claude Code security plugins
+
+Every developer using Claude Code gets two plugins from the official marketplace `claude-plugins-official` (GitHub `anthropics/claude-plugins-official`, built into Claude Code):
+
+- `security-guidance`: warnings on risky edits, LLM review of the diff at the end of each turn, agentic review on `git commit`.
+- `claude-security`: on-demand multi-agent vulnerability scan and verified patches (`/claude-security`).
+
+Both need Python 3.9+ on `PATH`. `security-guidance` makes an extra model call per turn and per commit, so mention the token cost to the team.
+
+Enable them in the scope the commit decision allows:
+
+| Commit decision | File | Effect |
+|---|---|---|
+| Commit | `.claude/settings.json` (shared) | Enabled for everyone who opens the repo, but not installed: each developer runs `claude plugin install security-guidance@claude-plugins-official --scope project` and the same for `claude-security` (or `--scope user` once for all projects). Put these two commands in AGENTS.md "Tools". |
+| Local | `.claude/settings.local.json` (untracked) | Claude Code installs them on the next start |
+| Any | `~/.claude/settings.json` via `install.ps1` (default with the `claude` target) | Installed for every project on that machine |
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    }
+  },
+  "enabledPlugins": {
+    "security-guidance@claude-plugins-official": true,
+    "claude-security@claude-plugins-official": true
+  }
+}
+```
+
+Merge these keys into the existing file; never drop other keys. `extraKnownMarketplaces` only matters where the built-in marketplace is missing, and it applies after the developer trusts the folder. A developer opts out on their machine with `false` in `.claude/settings.local.json`. Verify with `/plugin` (both listed, no entry in the Errors tab). Checked against the Claude Code docs on 2026-11-12.
+
 ## Local-only mode
 
 If agentic files must stay local, add every generated path to `.git/info/exclude`, for example:

@@ -81,6 +81,7 @@ If your agent has no subagents, run the same roles sequentially using the files 
 
 - Library and API docs: Context7 (MCP if available, otherwise `npx ctx7` or official docs). Do not rely on memory for versions or APIs.
 - Code map: graphify (`graphify-out/`). Query it before broad code searches.
+- Security plugins (Claude Code): `security-guidance` and `claude-security` from `claude-plugins-official`. Install once: `claude plugin install security-guidance@claude-plugins-official --scope user` and the same for `claude-security`. Scan with `/claude-security`.
 - {{STACK_TOOLS}}
 
 ## Security notes
