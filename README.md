@@ -1,6 +1,6 @@
 # agentic-readiness
 
-A portable, vendor-neutral skill that prepares an existing codebase for agentic AI development: questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan and a pilot task.
+A portable, vendor-neutral skill that prepares an existing codebase for agentic AI development: questionnaire, readiness audit, AGENTS.md and code map, tooling with a local or CI quality gate, security audit, project skills and subagents, migration plan and a pilot task.
 
 It uses the open [Agent Skills](https://agentskills.io) format (`SKILL.md` with `name` + `description` frontmatter), so the same folder works in Claude Code, Codex CLI, Gemini CLI, Cursor, GitHub Copilot, Windsurf/Devin and OpenCode. For the projects it sets up, `AGENTS.md` is the single source of truth and tool-specific files (CLAUDE.md, GEMINI.md, Copilot/Cursor rules) only point to it.
 
@@ -10,6 +10,7 @@ It uses the open [Agent Skills](https://agentskills.io) format (`SKILL.md` with 
 agentic-readiness/
   SKILL.md                 short workflow (steps 0-7)
   questionnaire.md         the one up-front question round, with defaults
+  quality-gate.md          one gate command, baselines, architecture rules, enforcement
   scripts/                 validate-report.ps1 / .sh: checks the readiness report
   stacks/                  android.md, flutter.md, generic.md
   templates/
@@ -20,6 +21,7 @@ agentic-readiness/
                                       security-audit, codebase-map
     agents/*.md            spec-writer, developer, code-reviewer,
                            security-reviewer, qa-verifier
+    githooks/pre-push      runs the quality gate before every push
     reports/agentic-readiness-report.md
 install.ps1                installs the skill for the tools you use
 ```
