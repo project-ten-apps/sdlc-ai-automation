@@ -18,7 +18,7 @@ agentic-readiness/
     CLAUDE.md              pointer: @AGENTS.md + Claude-only notes
     tool-pointers.md       per-tool folders/formats for instructions, skills, subagents
     skills/<name>/SKILL.template.md   new-feature, bugfix, verify, code-review,
-                                      security-audit, codebase-map
+                                      security-audit, codebase-map, pr-ready
     agents/*.md            spec-writer, developer, code-reviewer,
                            security-reviewer, qa-verifier
     githooks/pre-push      runs the quality gate before every push

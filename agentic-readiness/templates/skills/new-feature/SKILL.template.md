@@ -44,6 +44,7 @@ If the spec turns out wrong, update it and call it out in the report; never sile
 
 1. Run `code-review` and `security-audit` (diff mode) on the diff, in parallel if you can. Fix every blocker/critical finding and re-run.
 2. Run `verify`. Fix failures and re-run.
+3. Run `pr-ready`: branch, commits, diff hygiene and the PR description draft. Stop there; the developer pushes and opens the PR.
 
 ## 5. Finish
 

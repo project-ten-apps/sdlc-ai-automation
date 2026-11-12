@@ -86,9 +86,9 @@ If your agent has its own background-command tool, use it. Otherwise use the rec
 
 ## Workflow
 
-Project skills (in `{{SKILLS_DIR}}`): `new-feature`, `bugfix`, `verify`, `code-review`, `security-audit`, `codebase-map`.
+Project skills (in `{{SKILLS_DIR}}`): `new-feature`, `bugfix`, `verify`, `code-review`, `security-audit`, `codebase-map`, `pr-ready`.
 
-Feature flow: spec-writer -> developer approval of the spec -> developer (TDD) -> code-reviewer + security-reviewer (parallel) -> qa-verifier -> report.
+Feature flow: spec-writer -> developer approval of the spec -> developer (TDD) -> code-reviewer + security-reviewer (parallel) -> qa-verifier -> `pr-ready` -> report.
 If your agent has no subagents, run the same roles sequentially using the files in `{{AGENTS_DIR}}` as prompts.
 
 ## Tools

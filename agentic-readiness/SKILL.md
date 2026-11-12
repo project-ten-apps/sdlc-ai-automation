@@ -67,7 +67,7 @@ Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP 
 
 1. Generate project skills from `templates/skills/*/SKILL.template.md`: replace every `{{PLACEHOLDER}}` with values from the questionnaire, AGENTS.md and the stack guide (`{{VIDEO_COMMANDS}}` from the stack guide's Video item); delete sections that do not apply, but keep the video steps even when answer 13 is off; save each as `<skills-dir>/<name>/SKILL.md`. Prefix names with the project key where a generic name could clash with the developer's global skills (e.g. `acme-code-review`).
 2. Generate subagents from `templates/agents/*.md` for the tools in use (see `templates/tool-pointers.md` for each tool's folder and format): spec-writer, developer, code-reviewer, security-reviewer (mandatory, read-only), qa-verifier.
-3. Flow: spec-writer -> human approval of the spec -> developer (strict TDD) -> code-reviewer and security-reviewer in parallel -> qa-verifier -> report.
+3. Flow: spec-writer -> human approval of the spec -> developer (strict TDD) -> code-reviewer and security-reviewer in parallel -> qa-verifier -> `pr-ready` -> report; the developer pushes and opens the PR.
 4. Location: `.agents/skills/` (plus each tool's own folder if it does not read `.agents/skills`) only if committing is allowed; otherwise keep them local and list them in `.git/info/exclude`.
 
 ## 6. Stack and migration plan
