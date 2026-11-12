@@ -58,6 +58,57 @@ key.properties  keystore.properties  local.properties  secrets.*  service-accoun
 
 Limits to state in the report: ignore files and read-deny rules usually do not cover shell commands (`cat .env`), so also deny or ask for shell reads of those paths where the tool allows it, and prefer keeping real secrets outside the repository (env vars, OS keychain, CI secrets). Verify each rule by asking the agent to read one denied file; it must refuse or fail. Mechanisms checked on 2026-10-28; re-check vendor docs if behaviour differs.
 
+## Claude Code security plugins
+
+Two plugins from the official marketplace `claude-plugins-official` (GitHub `anthropics/claude-plugins-official`, built into Claude Code). Both need Python 3.9+ on `PATH`.
+
+- `claude-security`: on-demand multi-agent vulnerability scan and verified patches (`/claude-security`). Costs tokens only when someone runs it. **Always enable** for Claude Code users.
+- `security-guidance`: warnings on risky edits, an LLM review of the diff at the end of every turn, an agentic review on every `git commit`. It adds a model call to every turn and commit, so it is **recommended, not default**: assess the project, then let the developer choose.
+
+### Assess security-guidance for this project
+
+Use the step 1 audit and step 4 findings. Its checks target web-style vulnerabilities (injection, XSS, SSRF, IDOR, auth bypass, unsafe deserialization, path traversal, hardcoded secrets).
+
+| Relevance | Signals in the repository |
+|---|---|
+| High | Backend or web app taking untrusted input (HTTP handlers, SQL/ORM, templates, file uploads, URL fetching); auth, payments or personal data; WebViews or deep links passing data to code; secrets already found in step 4; a regulated client (question 11) |
+| Medium | Mobile or desktop client that talks to an API but holds no server logic; internal tools; CLI tools that parse files or run shell commands |
+| Low | Libraries without I/O, docs, pure UI prototypes, scripts nobody runs on untrusted data |
+
+### Ask the developer
+
+One question, with your recommendation first and the reason taken from the signals you found (e.g. "High: Retrofit + WebView with JS bridge in `app/web/`, 2 secrets in step 4"):
+
+1. **Enable for the whole team** (shared `.claude/settings.json`): every turn and commit is reviewed; extra tokens for everyone. Recommend for High.
+2. **Enable only for me** (`.claude/settings.local.json`): try it on this machine first; the team decides after the pilot. Recommend for Medium.
+3. **Do not enable**: rely on the `security-reviewer` subagent, `security-audit` skill and `/claude-security` scans. Recommend for Low.
+
+Option 1 needs commit permission (question 1); if answer 1 is "local", offer only 2 and 3. Record the choice and the reason in the report ("Security summary") and in AGENTS.md "Tools".
+
+### Where to write it
+
+| Scope | File | Effect |
+|---|---|---|
+| Team (commit allowed) | `.claude/settings.json` | Enabled for everyone who opens the repo, but not installed: each developer runs `claude plugin install <name>@claude-plugins-official --scope project` once (or `--scope user` for all projects). Put the commands in AGENTS.md "Tools". |
+| Local | `.claude/settings.local.json` (untracked) | Claude Code installs the plugins on the next start |
+| Machine | `~/.claude/settings.json` via `install.ps1` | `claude-security` by default; `-Plugins claude-security,security-guidance` adds both |
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    }
+  },
+  "enabledPlugins": {
+    "claude-security@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
+  }
+}
+```
+
+Keep the `security-guidance` line only if the developer chose it. Merge the keys into the existing file; never drop other keys. `extraKnownMarketplaces` only matters where the built-in marketplace is missing, and applies after the developer trusts the folder. A developer opts out on their machine with `false` in `.claude/settings.local.json`. Verify with `/plugin` (plugins listed, nothing in the Errors tab). Checked against the Claude Code docs on 2026-11-12.
+
 ## Local-only mode
 
 If agentic files must stay local, add every generated path to `.git/info/exclude`, for example:

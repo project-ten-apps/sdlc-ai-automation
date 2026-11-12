@@ -3,7 +3,7 @@ name: agentic-readiness
 description: Use when preparing an existing codebase (Android/Kotlin, Flutter/Dart or any other stack) for agentic AI development - questionnaire, readiness audit, AGENTS.md and code map, tooling, security audit, project skills and subagents, migration plan, pilot task. Works with any coding agent that reads Agent Skills or AGENTS.md.
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Agentic readiness
@@ -59,7 +59,7 @@ Verify each tool with one real call (list servers, run a sample query) and recor
 
 ## 4. Security
 
-Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP MASVS for mobile, OWASP ASVS/Top 10 otherwise): secrets, keystores, signing configs, service config files, `.env`, git history. Record findings with severity and owner (our side / client side) and a short remediation plan. If anything is critical, draft a short message to the client explaining the risk and the proposed fix. Never print full secret values (first 4 characters + `file:line`). Then add the secret read-protection rules for every agent in use (`templates/tool-pointers.md`, "Secret read protection"), at the scope the commit decision allows, and verify one rule per agent by asking it to read a denied file.
+Run the full mode of `templates/skills/security-audit/SKILL.template.md` (OWASP MASVS for mobile, OWASP ASVS/Top 10 otherwise): secrets, keystores, signing configs, service config files, `.env`, git history. Record findings with severity and owner (our side / client side) and a short remediation plan. If anything is critical, draft a short message to the client explaining the risk and the proposed fix. Never print full secret values (first 4 characters + `file:line`). Then add the secret read-protection rules for every agent in use (`templates/tool-pointers.md`, "Secret read protection"), at the scope the commit decision allows, and verify one rule per agent by asking it to read a denied file. If the team uses Claude Code (`templates/tool-pointers.md`, "Claude Code security plugins"): enable `claude-security`; assess how much `security-guidance` matters for this project and ask the developer to choose (team / only me / no) with your recommendation and reasons. This is the one extra question after step 0. Check the result with `/plugin`.
 
 ## 5. Project process: skills and subagents
 

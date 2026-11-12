@@ -31,7 +31,8 @@ Project skill templates are named `SKILL.template.md` so agents do not load them
 ```powershell
 git clone https://github.com/project-ten-apps/sdlc-ai-automation.git "$HOME\agent-skills"   # or keep it where it is
 cd "$HOME\agent-skills"
-./install.ps1                                # junctions into ~/.claude/skills and ~/.agents/skills
+./install.ps1                                # junctions into ~/.claude/skills and ~/.agents/skills,
+                                             # enables the claude-security plugin for Claude Code
 ```
 
 | Option | Effect |
@@ -42,7 +43,9 @@ cd "$HOME\agent-skills"
 | `-Force` | Replace an existing install |
 | `-Instructions codex,gemini,...` | Append a pointer snippet (between marker comments, idempotent) to that tool's global instruction file |
 | `-SnippetPath file.md` | Write the pointer snippet to a file to paste into any other tool's rules |
-| `-Uninstall` | Remove from the given targets and instruction files |
+| `-Plugins claude-security,security-guidance` | Claude Code plugins to enable in `~/.claude/settings.json`. Default: `claude-security` only, whenever `claude` is a target. `security-guidance` reviews every turn and commit (extra tokens), so add it only if you want it; the skill recommends it per project. Both need Python 3.9+ on `PATH` |
+| `-NoPlugins` | Leave Claude Code plugins alone |
+| `-Uninstall` | Remove from the given targets and instruction files (plugins only with an explicit `-Plugins`) |
 | `-WhatIf` | Show what would change |
 
 Junctions need no admin rights or Developer Mode. If execution policy blocks the script: `powershell -ExecutionPolicy Bypass -File .\install.ps1`.
