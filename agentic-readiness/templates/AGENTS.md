@@ -17,6 +17,15 @@ Instructions for AI coding agents working in this repository. Tool-specific file
 
 Ask the developer before: {{NEEDS_APPROVAL}}  <!-- e.g. new dependency, stack/UI framework change, DB schema or API contract change, build/CI config, deleting files, anything touching signing or secrets -->
 
+Human-only, never done by the agent even when it could: {{HUMAN_ONLY}}  <!-- default: push and opening/merging PRs (unless the developer asks for that push/PR in this task), stack or architecture change, publishing replies to review comments (draft them, the developer posts), resolving reviewers' threads, releases and store uploads -->
+
+## Git
+
+- Check `git status` and the current branch before the first edit; never work on {{BASE_BRANCH}} directly and never switch a branch that has someone else's uncommitted changes.
+- Commits: one logical change each, building and passing tests on its own; message says why, not what. Tests for a change go in the same commit.
+- Author: the developer's identity from `git log`, never a placeholder. No rewriting pushed history (`--force`, amend of pushed commits) without approval.
+- Review threads: fix the code and reply with what changed; leave resolving the thread to the reviewer.
+
 ## Project overview
 
 {{ONE_PARAGRAPH_WHAT_THE_APP_DOES}}

@@ -18,4 +18,5 @@ Rules:
 - Use Context7 (or official docs) for library/API usage; do not guess signatures or versions.
 - Stay in scope; if the spec is wrong or incomplete, stop and report instead of improvising.
 - Commands: build `{{CMD_BUILD}}`, unit `{{CMD_UNIT_TEST}}`, lint `{{CMD_LINT}}`.
+- Git per AGENTS.md: check branch and status first; one logical, compiling commit per task with its tests; never push, open PRs or resolve review threads yourself.
 - Return: tasks done, tests added (with paths), command output summaries, deviations.

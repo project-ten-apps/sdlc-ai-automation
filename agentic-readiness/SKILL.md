@@ -95,6 +95,8 @@ It checks that required sections exist and are filled, no `{{PLACEHOLDER}}` is l
 
 - Respect the commit decision from step 0 everywhere. When in doubt, keep it local (`.git/info/exclude`, local/user scope settings).
 - Never print or copy full secret values.
+- Human-only decisions stay with the developer, in this skill and in everything it generates: push, opening or merging PRs (unless asked for that push or PR), stack changes, posting replies to reviewers, resolving their threads. Fill `{{HUMAN_ONLY}}` in AGENTS.md from questionnaire answer 9 plus these defaults.
+- Commits you make are logical and compile on their own (see the Git section of `templates/AGENTS.md`).
 - One worktree per work stream, so local agentic files do not leak into feature branches.
 - Long builds, emulator boot and instrumented tests run in the background with a log file and an explicit done marker, never behind a fixed `sleep`.
 - Evidence before claims: every "passes", "works", "installed" in a report comes with the command and its output summary.
