@@ -69,9 +69,9 @@ Builds, emulator/simulator boot and instrumented tests can outlast the agent's c
 
 If your agent has its own background-command tool, use it. Otherwise use the recipe below, which records the exit code as the last log line. Logs go outside the worktree: `{{LOG_DIR}}`.
 
-1. Start: {{BACKGROUND_RUN}}  <!-- macOS/Linux: `nohup sh -c '<cmd> > {{LOG_DIR}}/<name>.log 2>&1; echo "EXIT $?" >> {{LOG_DIR}}/<name>.log' > /dev/null 2>&1 &`; Windows: `Start-Process -FilePath cmd.exe -ArgumentList '/c', '<cmd> > {{LOG_DIR}}\<name>.log 2>&1 && (echo EXIT 0 >> {{LOG_DIR}}\<name>.log) || (echo EXIT 1 >> {{LOG_DIR}}\<name>.log)' -WindowStyle Hidden` -->
+1. Start: {{BACKGROUND_RUN}}  <!-- macOS/Linux: `nohup sh -c '<cmd> > "{{LOG_DIR}}/<name>.log" 2>&1; echo "EXIT $?" >> "{{LOG_DIR}}/<name>.log"' > /dev/null 2>&1 &`; Windows: `$L = (Get-Item '{{LOG_DIR}}').FullName; Start-Process -FilePath cmd.exe -ArgumentList '/c', "<cmd> > ``"$L\<name>.log``" 2>&1 && (echo EXIT 0)>> ``"$L\<name>.log``" || (echo EXIT 1)>> ``"$L\<name>.log``"" -WindowStyle Hidden` (always quote the log path: workspace paths often contain spaces) -->
 2. Poll the end of the log every 15-30 s (`tail -n 40 <log>` / `Get-Content <log> -Tail 40`) and report progress to the developer on long runs.
-3. Done means an explicit marker, not elapsed time: `EXIT <n>` for every command, plus {{DONE_MARKERS}}  <!-- from the stack guide, e.g. `BUILD SUCCESSFUL` / `BUILD FAILED`, `sys.boot_completed` = 1, test summary line -->
+3. Done means an explicit marker, not elapsed time: a line matching `^EXIT [0-9]+` for every command, plus {{DONE_MARKERS}}  <!-- from the stack guide, e.g. `BUILD SUCCESSFUL` / `BUILD FAILED`, `sys.boot_completed` = 1, test summary line -->
 4. Error-looking lines before the marker (warnings, test names) are not the result; wait for the failure marker or `EXIT` non-zero, then read the full error. If you abandon a run, kill it so it does not hold locks (Gradle daemon, simulator).
 
 ## Conventions
